@@ -4,6 +4,19 @@
     {% include 'inc/header.html' %}
     <!-- iCheck -->
     <link rel="stylesheet" href="{{ url_for('static', filename='plugins/iCheck/square/blue.css') }}">
+
+    <style>
+        .cam-view-holder{
+            width: 100%;
+            height: 100%;
+            margin-bottom: 10px;
+        }
+        #cam-view{
+            width: 100%;
+            height: 100%;
+            border: 1px solid;
+        }
+    </style>
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
@@ -15,6 +28,11 @@
         <p class="login-box-msg">Sign in to start your session</p>
 
         <form action="../../index2.html" method="post">
+
+            <div class="cam-view-holder">
+                <video id="cam-view"></video>
+            </div>
+
             <div class="form-group has-feedback">
                 <input type="email" class="form-control" placeholder="Email">
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
@@ -58,6 +76,30 @@
             radioClass: 'iradio_square-blue',
             increaseArea: '20%' /* optional */
         });
+    });
+
+    $(function () {
+        console.log('fuck you');
+
+        var video = document.getElementById('cam-view');
+
+        if (navigator.mediaDevices.getUserMedia){
+            navigator.mediaDevices.getUserMedia({video:true,audio:false})
+                .then(function (stream) {
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(function (error) {
+                    console.log(error.message);
+            })
+        } else {
+            alert("Your browser dont support!")
+        }
+
+        console.log('fuck test');
+
+
+
     });
 </script>
 </body>
