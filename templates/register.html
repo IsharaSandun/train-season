@@ -183,7 +183,7 @@
 
     function capture() {
         count++;
-        if (count<=10){
+        if (count<=10) {
             context.drawImage(video, 0, 0, 800, 600);
             holder.append('<img class="cam-img" src="' + canvas.toDataURL('image/png') + '"/>');
         }
