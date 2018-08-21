@@ -45,15 +45,55 @@
                         the navbar
                         and the content will slightly differ than that of the normal layout.</p>
                 </div>
-                <div class="box box-default">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Blank Box</h3>
-                    </div>
-                    <div class="box-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="box box-default">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Profile</h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="row">
+
+                                    <div class="col-md-4">
+                                        <img class="profile-user-img img-responsive img-circle"
+                                             src="{{ url_for('static',filename='dist/img/user4-128x128.jpg') }}"
+                                             alt="User profile picture">
+
+                                        <h3 class="profile-username text-center">Nina Mcintire</h3>
+
+                                        <p class="text-muted text-center">Software Engineer</p>
+
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label">ID :</label>
+                                                <div class="col-sm-5 control-text">P0001</div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label">First Name :</label>
+                                                <div class="col-sm-5 control-text">Ishara</div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label">Last Name :</label>
+                                                <div class="col-sm-5 control-text">Sandun</div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label">Telephone :</label>
+                                                <div class="col-sm-5 control-text">+94770885246</div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
 
                     </div>
-                    <!-- /.box-body -->
                 </div>
+
                 <!-- /.box -->
             </section>
             <!-- /.content -->
