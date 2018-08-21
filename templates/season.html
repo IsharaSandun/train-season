@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% include 'inc/header.html' %}
+</head>
+<!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+<body class="hold-transition skin-blue layout-top-nav">
+<div class="wrapper">
+
+    {% include 'inc/top-nav.html' %}
+
+
+    <!-- Full Width Column -->
+    <div class="content-wrapper">
+        <div class="container">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <h1>
+                    Top Navigation
+                    <small>Example 2.0</small>
+                </h1>
+                <ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                    <li><a href="#">Layout</a></li>
+                    <li class="active">Top Navigation</li>
+                </ol>
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="box">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Current Season</h3>
+                            </div>
+                            <div class="form-horizontal">
+                                <div class="box-body">
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Season ID :</label>
+                                        <div class="col-sm-7 control-text">S0001</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">From :</label>
+                                        <div class="col-sm-7 control-text">Galle</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">To :</label>
+                                        <div class="col-sm-7 control-text">Colombo</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Class :</label>
+                                        <div class="col-sm-7 control-text">2nd Class</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Valid :</label>
+                                        <div class="col-sm-7 control-text">2018-08-01 to 2018-09-01</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Amount :</label>
+                                        <div class="col-sm-7 control-text">Rs 2000</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Payment Date :</label>
+                                        <div class="col-sm-7 control-text">None</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Active :</label>
+                                        <div class="col-sm-7 control-text">Yes</div>
+                                    </div>
+                                    <div class="box-footer">
+                                        <button type="button" class="btn btn-danger">Cancel</button>
+                                        <a href="/user/season/add" style="margin-left: 5px" type="button" class="btn btn-primary pull-right">Add New</a>
+                                        <button type="button" disabled class="btn btn-info pull-right">Re-New</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="box box-default">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Old</h3>
+                            </div>
+                            <div class="box-body">
+                                <table id="example1" class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Season ID</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Class</th>
+                                        <th>Valid</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>S0001</td>
+                                        <td>Galle</td>
+                                        <td>Colombo</td>
+                                        <td>3rd Class</td>
+                                        <td>2018-09-01</td>
+                                        <td>Rs 2000</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.container -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    {% include 'inc/footer.html' %}
+
+</div>
+<!-- ./wrapper -->
+
+{% include 'inc/js.html' %}
+
+
+<script>
+    $(function () {
+        $('#example1').DataTable();
+    })
+</script>
+
+
+</body>
+</html>
