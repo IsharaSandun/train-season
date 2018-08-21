@@ -1,98 +1,56 @@
-<!DOCTYPE html>
-<html>
-<head>
-    {% include 'inc/header.html' %}
-</head>
-<!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
-<body class="hold-transition skin-blue layout-top-nav">
-<div class="wrapper">
+{% extends 'starter.html' %}
 
-    {% include 'inc/top-nav.html' %}
-
-
-    <!-- Full Width Column -->
-    <div class="content-wrapper">
-        <div class="container">
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-                <h1>
-                    Profile
-                    <small>Example 2.0</small>
-                </h1>
-                <ol class="breadcrumb">
-                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                    <li><a href="#">Layout</a></li>
-                    <li class="active">Top Navigation</li>
-                </ol>
-            </section>
-
-            <!-- Main content -->
-            <section class="content">
-                {% include %}
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="box box-default">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Profile</h3>
-                            </div>
-                            <div class="box-body">
-                                <div class="row">
-
-                                    <div class="col-md-4">
-                                        <img class="profile-user-img img-responsive img-circle"
-                                             src="{{ url_for('static',filename='dist/img/user4-128x128.jpg') }}"
-                                             alt="User profile picture">
-
-                                        <h3 class="profile-username text-center">Nina Mcintire</h3>
-
-                                        <p class="text-muted text-center">Software Engineer</p>
-
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="form-horizontal">
-                                            <div class="form-group">
-                                                <label class="col-sm-5 control-label">ID :</label>
-                                                <div class="col-sm-5 control-text">P0001</div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-sm-5 control-label">First Name :</label>
-                                                <div class="col-sm-5 control-text">Ishara</div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-sm-5 control-label">Last Name :</label>
-                                                <div class="col-sm-5 control-text">Sandun</div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-sm-5 control-label">Telephone :</label>
-                                                <div class="col-sm-5 control-text">+94770885246</div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            </div>
-                            <!-- /.box-body -->
-                        </div>
-
-                    </div>
+{% block body %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Profile</h3>
                 </div>
+                <div class="box-body">
+                    <div class="row">
 
-                <!-- /.box -->
-            </section>
-            <!-- /.content -->
+                        <div class="col-md-4">
+                            <img class="profile-user-img img-responsive img-circle"
+                                 src="{{ url_for('static',filename='dist/img/user4-128x128.jpg') }}"
+                                 alt="User profile picture">
+
+                            <h3 class="profile-username text-center">Nina Mcintire</h3>
+
+                            <p class="text-muted text-center">Software Engineer</p>
+
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">ID :</label>
+                                    <div class="col-sm-5 control-text">P0001</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">First Name :</label>
+                                    <div class="col-sm-5 control-text">Ishara</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">Last Name :</label>
+                                    <div class="col-sm-5 control-text">Sandun</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-5 control-label">Telephone :</label>
+                                    <div class="col-sm-5 control-text">+94770885246</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.box-body -->
+            </div>
+
         </div>
-        <!-- /.container -->
     </div>
-    <!-- /.content-wrapper -->
+{% endblock %}
 
-    {% include 'inc/footer.html' %}
+{% block javascript %}
 
-</div>
-<!-- ./wrapper -->
-
-{% include 'inc/js.html' %}
-
-
-</body>
-</html>
+{% endblock %}
