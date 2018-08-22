@@ -9,7 +9,7 @@ def home():
 
 
 @app.route('/login/')
-def login():
+def userLogin():
     return render_template('login.html')
 
 @app.route('/register/')
@@ -32,6 +32,30 @@ def userFunctions(page,page2=""):
 
     return render_template('404.html')
 
+
+@app.route('/admin/login/')
+def adminLogin():
+    return render_template('admin/login.html')
+
+
+@app.route('/admin/')
+@app.route('/admin/user/<int:id>/')
+@app.route('/admin/<string:page>/<string:page2>/')
+@app.route('/admin/<string:page>/')
+def adminFunctions(page="",page2="",id=-1):
+
+    if (id > 0):
+        return render_template('admin/user-details.html')
+    elif (page2 == "") :
+        if (page == ''):
+            return render_template('admin/users.html')
+        elif(page == 'profile'):
+            return render_template('admin/profile.html')
+    else :
+        if (page == 'season' and page2 =='add'):
+            return render_template('season-new.html')
+
+    return render_template('404.html')
 
 @app.errorhandler(404)
 def page_not_found(e):
