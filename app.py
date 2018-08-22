@@ -12,8 +12,12 @@ def home():
 def userLogin():
     return render_template('login.html')
 
-@app.route('/register/')
+@app.route('/register/', methods=['GET','POST'])
 def register():
+
+    if request.method == 'POST':
+        return 'register'
+
     return render_template('register.html')
 
 
