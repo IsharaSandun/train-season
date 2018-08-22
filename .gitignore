@@ -160,7 +160,7 @@ celerybeat-schedule
 
 # Environments
 .env
-.venv
+#.venv
 env/
 # venv/
 ENV/
@@ -181,7 +181,7 @@ venv.bak/
 .mypy_cache/
 
 ### Python Patch ###
-.venv/
+#.venv/
 
 ### Python.VirtualEnv Stack ###
 # Virtualenv
