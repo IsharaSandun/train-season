@@ -1,4 +1,7 @@
 from flask import Flask,render_template,request,url_for,redirect,session
+from forms import RegisterForm
+
+
 
 app = Flask(__name__)
 
@@ -14,11 +17,12 @@ def userLogin():
 
 @app.route('/register/', methods=['GET','POST'])
 def register():
+    form = RegisterForm(request.form)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate():
         return 'register'
 
-    return render_template('register.html')
+    return render_template('register.html',form=form)
 
 
 @app.route('/user/<string:page>/<string:page2>/')
