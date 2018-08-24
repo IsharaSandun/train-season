@@ -18,14 +18,10 @@ class Database:
     def checkDb(self):
         try:
             conn, cursor = self.connection()
-            sql = "SELECT * FROM locations"
-            x = cursor.execute(sql)
-            result = cursor.fetchone()[1]
-            return result
+            conn.close()
+            return "Database Connection Success"
         except Exception as e:
             return "Error: " + str(e)
-        finally:
-            conn.close()
 
     def regNewUser(self):
         try:
@@ -33,11 +29,11 @@ class Database:
             sql = "SELECT * FROM locations WHERE id=2"
             x = cursor.execute(sql)
             result = cursor.fetchone()[1]
+            conn.close()
+
             return result
         except Exception as e:
             return "Error: " + str(e)
-        finally:
-            conn.close()
 
 
 # db = Database()
