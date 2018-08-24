@@ -1,13 +1,17 @@
 from flask import Flask,render_template,request,url_for,redirect,session
 from forms import RegisterForm
+from dbconnect import Database
+
 
 
 
 app = Flask(__name__)
+db = Database()
 
 
 @app.route('/')
 def home():
+    print(db.checkDb())
     return render_template('starter.html')
 
 
