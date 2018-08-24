@@ -11,7 +11,6 @@ db = Database()
 
 @app.route('/')
 def home():
-    print(db.checkDb())
     return render_template('starter.html')
 
 
