@@ -33,12 +33,12 @@ def register():
             user_id = db.regNewUser(fname,lname, tp, email, password)
 
             if (user_id > 0):
+                flash('User registeration succeeded please log in','s_msg')
                 return redirect(url_for('userLogin'))
+            else:
+                flash('User registration failed!','e_msg')
         else:
-            flash('User Exists, Please try different email',category='error')
-            flash('Succeed',category='success')
-            flash('User Exists, Please try different email',category='error')
-            flash('Succeed',category='success')
+            flash('User Exists, Please try different email',category='e_msg')
 
     return render_template('register.html', form=form)
 

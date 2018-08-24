@@ -1,6 +1,6 @@
 
 
-{% with messages = get_flashed_messages(category_filter=["error"]) %}
+{% with messages = get_flashed_messages(category_filter=["e_msg"]) %}
     {% if messages %}
         {% for msg in messages %}
             <div class="alert alert-danger alert-dismissible alert-custom">
@@ -11,7 +11,7 @@
     {% endif %}
 {% endwith %}
 
-{% with messages = get_flashed_messages(category_filter=["success"]) %}
+{% with messages = get_flashed_messages(category_filter=["s_msg"]) %}
     {% if messages %}
         {% for msg in messages %}
             <div class="alert alert-success alert-dismissible alert-custom">
@@ -23,7 +23,7 @@
 {% endwith %}
 
 
-{% with messages = get_flashed_messages(category_filter=["warning"]) %}
+{% with messages = get_flashed_messages(category_filter=["w_msg"]) %}
     {% if messages %}
         {% for msg in messages %}
             <div class="alert alert-warning alert-dismissible alert-custom">
@@ -34,7 +34,7 @@
     {% endif %}
 {% endwith %}
 
-{% with messages = get_flashed_messages(category_filter=["info"]) %}
+{% with messages = get_flashed_messages(category_filter=["i_msg"]) %}
     {% if messages %}
         {% for msg in messages %}
             <div class="alert alert-info alert-dismissible alert-custom">

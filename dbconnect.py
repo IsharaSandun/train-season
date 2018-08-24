@@ -52,7 +52,7 @@ class Database:
             conn, cursor = self.connection()
             sql = "SELECT * FROM users where email=%s"
             cursor.execute(sql,(email))
-            result = len(cursor.fetchone())
+            result = len(cursor.fetchall())
             conn.close()
 
             if (result > 0):
@@ -80,7 +80,7 @@ class Database:
             return False
 
 
-if __name__ == '__main__':
-    db = Database()
-    print(db.regNewUser('fwef','fwef','0750998544','afaaa@gmail.com','pss'))
+# if __name__ == '__main__':
+#     db = Database()
+#     print(db.regNewUser('fwef','fwef','0750998544','afaaa@gmail.com','pss'))
     # print(db.getUser()[1]['fname'])

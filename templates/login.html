@@ -21,13 +21,15 @@
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a href="/"><b>Admin</b>LTE</a>
+        <a href="/"><b>Train</b> Season</a>
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
         <p class="login-box-msg">Sign in to start your session</p>
 
-        <form action="../../index2.html" method="post">
+        {% include 'inc/noti.html' %}
+
+        <form action="/login" method="post">
 
             <div class="cam-view-holder">
                 <video id="cam-view"></video>
