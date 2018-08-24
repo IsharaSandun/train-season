@@ -1,5 +1,6 @@
 import pymysql
 from pymysql import escape_string as thwart
+from pymysql.cursors import DictCursor,SSCursor,SSDictCursor
 
 
 class Database:
@@ -34,6 +35,18 @@ class Database:
         except Exception as e:
             return "Error: " + str(e)
 
+    def getUserById(self,id):
+        try:
+            conn,cursor = self.connection()
+            cursor = conn.cursor(DictCursor)
+            sql = "SELECT * FROM users WHERE id=%s"
+            cursor.execute(sql,(id))
+            result = cursor.fetchone()
+            return result
+
+        except Exception as e:
+            return "Error: " + str(e)
+
     def checkUserExists(self,email):
         try:
             conn, cursor = self.connection()
@@ -50,22 +63,24 @@ class Database:
         except Exception as e:
             return "Error: " + str(e)
 
-
-
-    def regNewUser(self,fname,lname,email,password):
+    def regNewUser(self,fname,lname,tp,email,password):
         try:
             conn, cursor = self.connection()
-            sql = "INSERT INTO users (fname,lname,email,password) VALUES (%s,%s,%s,%s)"
-            result = cursor.execute(sql,(fname,lname,email,password))
+            sql = "INSERT INTO users (fname,lname,tp,email,password) VALUES (%s,%s,%s,%s,%s)"
+            cursor.execute(sql,(fname,lname,tp,email,password))
+            user_id = cursor.lastrowid
             conn.commit()
             conn.close()
-            return result
+
+            return user_id
+
         except Exception as e:
-            return "Error: " + str(e)
+            print("Error: ", str(e))
+
+            return False
 
 
-db = Database()
-# print(db.checkDb())
-# print(db.userCount())
-print(db.regNewUser('Ishara','Sandun','ishara@gmail.com','pss'))
-# print(db.checkUserExists('ishara@gmail.com'))
+if __name__ == '__main__':
+    db = Database()
+    print(db.regNewUser('fwef','fwef','0750998544','afaaa@gmail.com','pss'))
+    # print(db.getUser()[1]['fname'])
