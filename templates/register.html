@@ -96,7 +96,7 @@
         <div class="pull-left reg-detail-side">
             {% from "forms_macro.html" import render_field,render_field_icon,render_checkbox %}
 
-            <form action="/register/" method="post">
+            <form id="frmRegUser" action="/register/" method="post" enctype="multipart/form-data">
                 {{ render_field(form.firstName, placeholder=form.firstName.label.text) }}
                 {{ render_field(form.lastName, placeholder=form.lastName.label.text) }}
                 {{ render_field_icon('envelope',form.email, placeholder=form.email.label.text,error_inline=True) }}
@@ -169,6 +169,24 @@
             holder.append('<img class="cam-img" src="' + canvas.toDataURL('image/png') + '"/>');
         }
     }
+
+    {#$('#frmRegUser').on('submit',function (e) {#}
+    {#    e.preventDefault();#}
+    {#    if (count<10){#}
+    {#        alert('Please Caputure 10 Images');#}
+    {#    }#}
+    {#    $.ajax({#}
+    {#        type:'POST',#}
+    {#        url:'/upload/',#}
+    {#        data:{img:canvas.toDataURL('image/png')},#}
+    {#        success:function (data) {#}
+    {#            alert(data)#}
+    {#        }#}
+    {#    }).done(function (e) {#}
+    {#        console.log('saved');#}
+    {##}
+    {#    })#}
+    {#})#}
 
 
 </script>

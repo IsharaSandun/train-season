@@ -1,4 +1,7 @@
-from flask import Flask, render_template, request, url_for, redirect, session, flash
+import os
+
+from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory, send_file, \
+    jsonify
 from forms import RegisterForm
 from dbconnect import Database
 from passlib.hash import sha256_crypt
@@ -6,6 +9,7 @@ from passlib.hash import sha256_crypt
 app = Flask(__name__)
 app.secret_key = 'my screcret key'
 db = Database()
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 @app.route('/')
@@ -30,17 +34,39 @@ def register():
 
         check_user = db.checkUserExists(email)
         if (not check_user):
-            user_id = db.regNewUser(fname,lname, tp, email, password)
+            user_id = db.regNewUser(fname, lname, tp, email, password)
 
             if (user_id > 0):
-                flash('User registeration succeeded please log in','s_msg')
+                flash('User registeration succeeded please log in', 's_msg')
                 return redirect(url_for('userLogin'))
             else:
-                flash('User registration failed!','e_msg')
+                flash('User registration failed!', 'e_msg')
         else:
-            flash('User Exists, Please try different email',category='e_msg')
+            flash('User Exists, Please try different email', category='e_msg')
 
     return render_template('register.html', form=form)
+
+
+@app.route('/upload/', methods=['GET', 'POST'])
+def upload():
+    target = os.path.join(APP_ROOT,'uploads/')
+    print(target)
+    if not os.path.isdir(target):
+        os.mkdir(target)
+
+
+    if request.method == 'POST':
+        for file in request.files.getlist('img'):
+            print(file)
+            filename = file.filename
+            destination = "/".join([target,filename])
+            print(destination)
+            file.save(destination)
+
+        return "file uploaded"
+
+
+    return "ooooooppppppssss"
 
 
 @app.route('/user/<string:page>/<string:page2>/')
