@@ -167,26 +167,38 @@
         if (count<=10) {
             context.drawImage(video, 0, 0, 800, 600);
             holder.append('<img class="cam-img" src="' + canvas.toDataURL('image/png') + '"/>');
+
+            var form = document.getElementById('frmRegUser');
+            var imgUrl = canvas.toDataURL('image/png');
+            var block = imgUrl.split(";");
+            var contentType = block[0].split(":")[1];
+            var realData = block[1].split(",")[1];
+            var blob = b64toBlob(realData,contentType)
+
+            var formDataToUpload = new FormData(form);
+            formDataToUpload.append('img',blob);
+
         }
     }
 
-    {#$('#frmRegUser').on('submit',function (e) {#}
-    {#    e.preventDefault();#}
-    {#    if (count<10){#}
-    {#        alert('Please Caputure 10 Images');#}
-    {#    }#}
-    {#    $.ajax({#}
-    {#        type:'POST',#}
-    {#        url:'/upload/',#}
-    {#        data:{img:canvas.toDataURL('image/png')},#}
-    {#        success:function (data) {#}
-    {#            alert(data)#}
-    {#        }#}
-    {#    }).done(function (e) {#}
-    {#        console.log('saved');#}
-    {##}
-    {#    })#}
-    {#})#}
+    $('#frmRegUser').on('submit',function (e) {
+        e.preventDefault();
+        if (count<10){
+            //alert('Please Caputure 10 Images');
+        }
+
+        $.ajax({
+            type:'POST',
+            url:'/upload/',
+            data:{img:canvas.toDataURL('image/png')},
+            success:function (data) {
+                alert(data)
+            }
+        }).done(function (e) {
+            console.log('saved');
+
+        })
+    })
 
 
 </script>

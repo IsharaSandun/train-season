@@ -1,4 +1,4 @@
-import os
+import os, base64, re
 
 from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory, send_file, \
     jsonify
@@ -49,22 +49,24 @@ def register():
 
 @app.route('/upload/', methods=['GET', 'POST'])
 def upload():
-    target = os.path.join(APP_ROOT,'uploads/')
+    target = os.path.join(APP_ROOT, 'uploads/')
     print(target)
     if not os.path.isdir(target):
         os.mkdir(target)
 
-
     if request.method == 'POST':
+        count = 0
         for file in request.files.getlist('img'):
             print(file)
+            count = count + 1
+            # filename = '00' + str(count) + '.png'
             filename = file.filename
-            destination = "/".join([target,filename])
+            print(filename)
+            destination = "/".join([target, filename])
             print(destination)
             file.save(destination)
 
         return "file uploaded"
-
 
     return "ooooooppppppssss"
 
