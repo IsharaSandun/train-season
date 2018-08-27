@@ -1,3 +1,9 @@
+#FR
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+
 import os, base64, re
 
 from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory, send_file, \
@@ -6,10 +12,20 @@ from forms import RegisterForm
 from dbconnect import Database
 from passlib.hash import sha256_crypt
 
+# for facial recognition
+from packages.preprocess import preprocesses
+from packages.classifier import training
+
 app = Flask(__name__)
 app.secret_key = 'my screcret key'
 db = Database()
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+# TRAIN_FOLDER = os.path.join(APP_ROOT, 'uploads/train/')
+# PRE_FOLDER = os.path.join(APP_ROOT, 'uploads/pre/')
+TRAIN_FOLDER = './uploads/train/'
+PRE_FOLDER = './uploads/pre/'
+CLASSIFIER = './class/classifier.pkl'
+MODEL_DIR = './model'
 
 
 @app.route('/')
@@ -27,10 +43,23 @@ def register():
     form = RegisterForm(request.form)
     return render_template('register.html', form=form)
 
+@app.route('/train/')
+def train():
+    print("Training Start")
+    obj = training(PRE_FOLDER, MODEL_DIR, CLASSIFIER)
+    get_file = obj.main_train()
+    print('Saved classifier model to file "%s"' % get_file)
+    return 'train end'
 
-@app.route('/reg/', methods=['GET'])
-def reg():
-    return jsonify(error=["fefefe"])
+
+@app.route('/init/')
+def init():
+    obj = preprocesses(TRAIN_FOLDER, PRE_FOLDER)
+    nrof_images_total, nrof_successfully_aligned = obj.collect_data()
+
+    print('Total number of images: %d' % nrof_images_total)
+    print('Number of successfully aligned images: %d' % nrof_successfully_aligned)
+    return 'init align images'
 
 
 @app.route('/do_reg/', methods=['POST'])
@@ -51,8 +80,8 @@ def doRegister():
             user_id = db.regNewUser(fname, lname, tp, email, password)
 
             if (user_id > 0):
-                flash('User registeration succeeded please log in', 's_msg')
-                target = os.path.join(APP_ROOT, 'uploads/train/' + str(user_id) + '/')
+
+                target = os.path.join(TRAIN_FOLDER, str(user_id) + '/')
                 if not os.path.isdir(target):
                     os.mkdir(target)
 
@@ -64,7 +93,19 @@ def doRegister():
                     print(destination)
                     file.save(destination)
 
-                return jsonify(success=["User Registration Success"])
+                obj = preprocesses(TRAIN_FOLDER, PRE_FOLDER)
+                nrof_images_total, nrof_successfully_aligned = obj.collect_data()
+
+                print('Total number of images: %d' % nrof_images_total)
+                print('Number of successfully aligned images: %d' % nrof_successfully_aligned)
+
+                print("Training Start")
+                obj = training(PRE_FOLDER, MODEL_DIR, CLASSIFIER)
+                get_file = obj.main_train()
+                print('Saved classifier model to file "%s"' % get_file)
+
+                flash('User registeration succeeded please log in', 's_msg')
+                return jsonify(success=["User Registration Success"],value=True)
 
             else:
                 # flash('User registration failed!', 'e_msg')

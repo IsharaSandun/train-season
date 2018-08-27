@@ -177,8 +177,8 @@
             var realData = block[1].split(",")[1];
 
             var blob = b64toBlob(realData, contentType);
-            var filename = "image"+count+"."+fileType;
-            blobArray.push({blobs:blob,filename:filename});
+            var filename = "image" + count + "." + fileType;
+            blobArray.push({blobs: blob, filename: filename});
 
         }
     }
@@ -186,43 +186,47 @@
     $('#frmRegUser').on('submit', function (e) {
         e.preventDefault();
         if (count < 10) {
-            displayNoti('error','Please Capture 10 images');
+            displayNoti('error', 'Please Capture 10 images');
         } else {
+            var form = document.getElementById('frmRegUser');
+            var formDataToUpload = new FormData(form);
 
-        }
-
-        var form = document.getElementById('frmRegUser');
-        var formDataToUpload = new FormData(form);
-
-        for(i in blobArray){
-            formDataToUpload.append("img",blobArray[i].blobs,blobArray[i].filename);
-        }
-
-
-        $.ajax({
-            type: 'POST',
-            url: '/do_reg/',
-            data: formDataToUpload,
-            contentType: false,
-            processData: false,
-            cache: false,
-            success: function (data) {
-                console.log(data)
-                clearNoti();
-                for (i in data['form_error']){
-                    msg = data['form_error'][i][0];
-                    displayNoti('error',msg);
-                }
-                for (i in data['error']){
-                    msg = data['error'][i];
-                    displayNoti('error',msg);
-                }
-                for (i in data['success']){
-                    msg = data['success'][i];
-                    displayNoti('success',msg);
-                }
+            for (i in blobArray) {
+                formDataToUpload.append("img", blobArray[i].blobs, blobArray[i].filename);
             }
-        })
+
+
+            $.ajax({
+                type: 'POST',
+                url: '/do_reg/',
+                data: formDataToUpload,
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (data) {
+                    console.log(data)
+                    clearNoti();
+                    for (i in data['form_error']) {
+                        msg = data['form_error'][i][0];
+                        displayNoti('error', msg);
+                    }
+                    for (i in data['error']) {
+                        msg = data['error'][i];
+                        displayNoti('error', msg);
+                    }
+                    for (i in data['success']) {
+                        msg = data['success'][i];
+                        displayNoti('success', msg);
+                    }
+                    if (data['value']==true){
+                        location.reload();
+                    }
+                }
+            })
+
+        }
+
+
     })
 
 
