@@ -80,7 +80,7 @@ class Database:
             return False
 
 
-# if __name__ == '__main__':
-#     db = Database()
-#     print(db.regNewUser('fwef','fwef','0750998544','afaaa@gmail.com','pss'))
-    # print(db.getUser()[1]['fname'])
+if __name__ == '__main__':
+    db = Database()
+    # print(db.regNewUser('fwef','fwef','0750998544','afaaa@gmail.com','pss'))
+    print(db.getUserById(14))

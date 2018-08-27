@@ -96,7 +96,7 @@
         <div class="pull-left reg-detail-side">
             {% from "forms_macro.html" import render_field,render_field_icon,render_checkbox %}
 
-            <form id="frmRegUser" action="/register/" method="post" enctype="multipart/form-data">
+            <form id="frmRegUser" action="/do_reg/" method="post" enctype="multipart/form-data">
                 {{ render_field(form.firstName, placeholder=form.firstName.label.text) }}
                 {{ render_field(form.lastName, placeholder=form.lastName.label.text) }}
                 {{ render_field_icon('envelope',form.email, placeholder=form.email.label.text,error_inline=True) }}
@@ -200,15 +200,22 @@
 
         $.ajax({
             type: 'POST',
-            url: '/register/',
+            url: '/do_reg/',
             data: formDataToUpload,
             contentType: false,
             processData: false,
             cache: false,
             success: function (data) {
-
+                {#console.log(data['error']);#}
+                for (i in data['error']){
+                    console.log(data['error'][i][0]);
+                    msg = data['error'][i][0];
+                    clearNoti();
+                    displayNoti('error',msg);
+                }
             }
         }).done(function (e) {
+
             console.log('saved');
 
         })

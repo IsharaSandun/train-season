@@ -22,11 +22,17 @@ def userLogin():
     return render_template('login.html')
 
 
-@app.route('/register/', methods=['GET', 'POST'])
+@app.route('/register/', methods=['GET'])
 def register():
     form = RegisterForm(request.form)
-    print("form validate",form.validate())
+    return render_template('register.html', form=form)
+
+@app.route('/do_reg/', methods=['POST'])
+def doRegister():
+    form = RegisterForm(request.form)
+    print("form validate", form.validate())
     if request.method == 'POST' and form.validate():
+
         fname = form.firstName.data
         lname = form.lastName.data
         email = form.email.data
@@ -40,28 +46,28 @@ def register():
 
             if (user_id > 0):
                 flash('User registeration succeeded please log in', 's_msg')
-                target = os.path.join(APP_ROOT, 'uploads/'+str(user_id)+'/')
-                print(target)
+                target = os.path.join(APP_ROOT, 'uploads/' + str(user_id) + '/')
                 if not os.path.isdir(target):
                     os.mkdir(target)
 
                 for file in request.files.getlist('img'):
                     print(file)
-                    filename = str(user_id) +"-"+ file.filename
+                    filename = str(user_id) + "-" + file.filename
                     print(filename)
                     destination = "/".join([target, filename])
                     print(destination)
                     file.save(destination)
 
-                return redirect(url_for('userLogin'))
+                return jsonify(msg="test msg")
 
             else:
                 flash('User registration failed!', 'e_msg')
         else:
             flash('User Exists, Please try different email', category='e_msg')
 
-    return render_template('register.html', form=form)
+    return jsonify(error=form.errors)
 
+    # return redirect(url_for('register'))
 
 @app.route('/upload/', methods=['GET', 'POST'])
 def upload():
