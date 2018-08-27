@@ -186,12 +186,13 @@
     $('#frmRegUser').on('submit', function (e) {
         e.preventDefault();
         if (count < 10) {
-            //alert('Please Caputure 10 Images');
+            displayNoti('error','Please Capture 10 images');
+        } else {
+
         }
 
         var form = document.getElementById('frmRegUser');
         var formDataToUpload = new FormData(form);
-        console.log(blobArray);
 
         for(i in blobArray){
             formDataToUpload.append("img",blobArray[i].blobs,blobArray[i].filename);
@@ -206,18 +207,21 @@
             processData: false,
             cache: false,
             success: function (data) {
-                {#console.log(data['error']);#}
-                for (i in data['error']){
-                    console.log(data['error'][i][0]);
-                    msg = data['error'][i][0];
-                    clearNoti();
+                console.log(data)
+                clearNoti();
+                for (i in data['form_error']){
+                    msg = data['form_error'][i][0];
                     displayNoti('error',msg);
                 }
+                for (i in data['error']){
+                    msg = data['error'][i];
+                    displayNoti('error',msg);
+                }
+                for (i in data['success']){
+                    msg = data['success'][i];
+                    displayNoti('success',msg);
+                }
             }
-        }).done(function (e) {
-
-            console.log('saved');
-
         })
     })
 

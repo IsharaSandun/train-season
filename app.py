@@ -27,6 +27,12 @@ def register():
     form = RegisterForm(request.form)
     return render_template('register.html', form=form)
 
+
+@app.route('/reg/', methods=['GET'])
+def reg():
+    return jsonify(error=["fefefe"])
+
+
 @app.route('/do_reg/', methods=['POST'])
 def doRegister():
     form = RegisterForm(request.form)
@@ -46,7 +52,7 @@ def doRegister():
 
             if (user_id > 0):
                 flash('User registeration succeeded please log in', 's_msg')
-                target = os.path.join(APP_ROOT, 'uploads/' + str(user_id) + '/')
+                target = os.path.join(APP_ROOT, 'uploads/train/' + str(user_id) + '/')
                 if not os.path.isdir(target):
                     os.mkdir(target)
 
@@ -58,16 +64,19 @@ def doRegister():
                     print(destination)
                     file.save(destination)
 
-                return jsonify(msg="test msg")
+                return jsonify(success=["User Registration Success"])
 
             else:
-                flash('User registration failed!', 'e_msg')
+                # flash('User registration failed!', 'e_msg')
+                return jsonify(error=["User registration failed!"])
         else:
-            flash('User Exists, Please try different email', category='e_msg')
+            # flash('User Exists, Please try different email', category='e_msg')
+            return jsonify(error=["User Exists, Please try different email!"])
 
-    return jsonify(error=form.errors)
+    return jsonify(form_error=form.errors)
 
     # return redirect(url_for('register'))
+
 
 @app.route('/upload/', methods=['GET', 'POST'])
 def upload():

@@ -72,5 +72,5 @@ function displayNoti(type,msg) {
     }
 }
 function clearNoti() {
-    $('.msg-noti').html();
+    $('.msg-noti').html("");
 }
