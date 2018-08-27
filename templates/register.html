@@ -142,11 +142,13 @@
     var canvas = $('#canvas')[0];
     var context = canvas.getContext('2d');
     var holder = $('.cam-img-holder');
+    var frmImage = new FormData();
+    var blobArray = [];
 
     $(function () {
 
         if (navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({video:true, audio: false})
+            navigator.mediaDevices.getUserMedia({video: true, audio: false})
                 .then(function (stream) {
                     video.srcObject = stream;
                     video.play();
@@ -164,35 +166,47 @@
 
     function capture() {
         count++;
-        if (count<=10) {
+        if (count <= 10) {
             context.drawImage(video, 0, 0, 800, 600);
             holder.append('<img class="cam-img" src="' + canvas.toDataURL('image/png') + '"/>');
 
-            var form = document.getElementById('frmRegUser');
             var imgUrl = canvas.toDataURL('image/png');
             var block = imgUrl.split(";");
             var contentType = block[0].split(":")[1];
+            var fileType = contentType.split("/")[1];
             var realData = block[1].split(",")[1];
-            var blob = b64toBlob(realData,contentType)
 
-            var formDataToUpload = new FormData(form);
-            formDataToUpload.append('img',blob);
+            var blob = b64toBlob(realData, contentType);
+            var filename = "image"+count+"."+fileType;
+            blobArray.push({blobs:blob,filename:filename});
 
         }
     }
 
-    $('#frmRegUser').on('submit',function (e) {
+    $('#frmRegUser').on('submit', function (e) {
         e.preventDefault();
-        if (count<10){
+        if (count < 10) {
             //alert('Please Caputure 10 Images');
         }
 
+        var form = document.getElementById('frmRegUser');
+        var formDataToUpload = new FormData(form);
+        console.log(blobArray);
+
+        for(i in blobArray){
+            formDataToUpload.append("img",blobArray[i].blobs,blobArray[i].filename);
+        }
+
+
         $.ajax({
-            type:'POST',
-            url:'/upload/',
-            data:{img:canvas.toDataURL('image/png')},
-            success:function (data) {
-                alert(data)
+            type: 'POST',
+            url: '/register/',
+            data: formDataToUpload,
+            contentType: false,
+            processData: false,
+            cache: false,
+            success: function (data) {
+
             }
         }).done(function (e) {
             console.log('saved');

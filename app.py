@@ -25,6 +25,7 @@ def userLogin():
 @app.route('/register/', methods=['GET', 'POST'])
 def register():
     form = RegisterForm(request.form)
+    print("form validate",form.validate())
     if request.method == 'POST' and form.validate():
         fname = form.firstName.data
         lname = form.lastName.data
@@ -33,12 +34,27 @@ def register():
         password = sha256_crypt.encrypt(str(form.password.data))
 
         check_user = db.checkUserExists(email)
+        print("check user ", check_user)
         if (not check_user):
             user_id = db.regNewUser(fname, lname, tp, email, password)
 
             if (user_id > 0):
                 flash('User registeration succeeded please log in', 's_msg')
+                target = os.path.join(APP_ROOT, 'uploads/'+str(user_id)+'/')
+                print(target)
+                if not os.path.isdir(target):
+                    os.mkdir(target)
+
+                for file in request.files.getlist('img'):
+                    print(file)
+                    filename = str(user_id) +"-"+ file.filename
+                    print(filename)
+                    destination = "/".join([target, filename])
+                    print(destination)
+                    file.save(destination)
+
                 return redirect(url_for('userLogin'))
+
             else:
                 flash('User registration failed!', 'e_msg')
         else:
@@ -56,6 +72,8 @@ def upload():
 
     if request.method == 'POST':
         count = 0
+        username = request.form['user'];
+        print(request.form)
         for file in request.files.getlist('img'):
             print(file)
             count = count + 1
