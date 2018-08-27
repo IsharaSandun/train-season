@@ -1,0 +1,10 @@
+./uploads/pre/2\2-image1.png 252 189 388 369
+./uploads/pre/2\2-image10.png 245 202 376 362
+./uploads/pre/2\2-image2.png 255 198 392 370
+./uploads/pre/2\2-image3.png 260 197 396 374
+./uploads/pre/2\2-image4.png 257 197 393 366
+./uploads/pre/2\2-image5.png 255 196 390 371
+./uploads/pre/2\2-image6.png 245 193 384 369
+./uploads/pre/2\2-image7.png 251 199 385 365
+./uploads/pre/2\2-image8.png 249 196 385 368
+./uploads/pre/2\2-image9.png 242 199 376 368
