@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'inc/header.html' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/cover.css") }}">
+    <style>
+        #cover{
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1000;
+            overflow: hidden;
+            height: 100%;
+        }
+        body{
+            background-color: rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div class="site-wrapper">
+
+    <div class="site-wrapper-inner">
+        <img id="cover" src="{{ url_for('static', filename='img/cover.jpg') }}">
+
+        <div class="cover-container">
+
+            <div class="inner cover">
+                <h1 class="cover-heading">Train Season</h1>
+                <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download,
+                    edit the text, and add your own fullscreen background photo to make it your own.</p>
+                <p class="lead">
+                    <a href="/login" class="btn btn-lg btn-default">Sign In</a>
+                </p>
+            </div>
+
+            <div class="mastfoot">
+                <div class="inner">
+                    <p>Created By <a href="#">Ishara Sandun</a></p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</body>
+
+<!-- jQuery 3 -->
+<script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+
+
+</html>

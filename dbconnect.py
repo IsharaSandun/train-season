@@ -42,7 +42,9 @@ class Database:
             sql = "SELECT * FROM users WHERE id=%s"
             cursor.execute(sql,(id))
             result = cursor.fetchone()
-            return result
+            if result is not None:
+                return result
+            return False
 
         except Exception as e:
             return "Error: " + str(e)
@@ -79,8 +81,24 @@ class Database:
 
             return False
 
+    def getUserPassword(self,email):
+        try:
+            conn,cursor = self.connection()
+            cursor = conn.cursor(DictCursor)
+            sql = "SELECT * FROM users WHERE email=%s"
+            cursor.execute(sql,(email))
+            result = cursor.fetchone()
+            if result is not None:
+                return result['password']
+            return False
+
+        except Exception as e:
+            return "Error: " + str(e)
+
+
 
 if __name__ == '__main__':
     db = Database()
     # print(db.regNewUser('fwef','fwef','0750998544','afaaa@gmail.com','pss'))
-    print(db.getUserById(14))
+    # print(db.getUserById(14))
+    # print(db.getUserPassword('e@gmail.com'))

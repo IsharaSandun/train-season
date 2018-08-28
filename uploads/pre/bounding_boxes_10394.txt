@@ -1,2 +1,0 @@
-./uploads/pre/unkown\pitbul rec.png 108 58 328 340
-./uploads/pre/unkown\pitbull train.png 382 62 590 338

@@ -9,7 +9,7 @@ from flask import Flask, render_template, request, url_for, redirect, session, f
     jsonify
 from forms import RegisterForm
 from dbconnect import Database
-from passlib.hash import sha256_crypt,md5_crypt
+from passlib.hash import sha256_crypt, md5_crypt
 
 # for facial recognition
 from packages.preprocess import preprocesses
@@ -36,7 +36,7 @@ npy = ''
 
 @app.route('/')
 def home():
-    return render_template('starter.html')
+    return render_template('home.html')
 
 
 @app.route('/register/', methods=['GET'])
@@ -56,7 +56,7 @@ def train():
 
 @app.route('/recognize/')
 def recognize(filename="img.png"):
-    image_path = TEST_FOLDER+filename
+    image_path = TEST_FOLDER + filename
     with tf.Graph().as_default():
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.6)
         sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
@@ -148,15 +148,15 @@ def recognize(filename="img.png"):
                                 if HumanNames[best_class_indices[0]] == H_i:
                                     result_names = HumanNames[best_class_indices[0]]
                                     print("Face Recognized: ", result_names)
-                                    return jsonify(result=result_names)
+                                    return str(result_names)
                         else:
                             print('Not Recognized')
-                            return jsonify(result=False)
+                            return False
                 else:
                     print('Unable to align')
-                    return jsonify(result=False)
+                    return False
 
-    return jsonify(result=False)
+    return False
 
 
 @app.route('/init/')
@@ -173,34 +173,55 @@ def init():
 def userLogin():
     return render_template('login.html')
 
+
 def random_name():
     name = md5_crypt.encrypt(str(time.time())).split("$")[2]
     return name
 
 
-@app.route('/do_login/', methods=['POST','GET'])
+@app.route('/do_login/', methods=['POST'])
 def doLogin():
-
     target = os.path.join(APP_ROOT, 'uploads/test/')
-    print(target)
     if not os.path.isdir(target):
         os.mkdir(target)
 
+    filename = random_name() + ".png"
+    destination = "/".join([target, filename])
+
     if request.method == 'POST':
 
-        filename = random_name()+".png"
+        username = request.form.get('email')
+        password = request.form.get('password')
+        if username == '' and password == '':
+            print(request.files.getlist('img'))
+            for file in request.files.getlist('img'):
+                file.save(destination)
 
-        for file in request.files.getlist('img'):
-            print(file)
-            print(filename)
-            destination = "/".join([target, filename])
-            print(destination)
-            file.save(destination)
+            result = recognize(filename)
+            os.remove(destination)
+            if result is False:
+                return jsonify(result=False)
 
+            user_details = db.getUserById(result)
+            session['logged_in'] = True
+            session['username'] = user_details['email']
 
-        return recognize(filename)
+            return jsonify(result=True)
 
-    return jsonify(form_error=[])
+        else:
+
+            user_pw = db.getUserPassword(username)
+            if user_pw is not False:
+                if sha256_crypt.verify(password, db.getUserPassword(username)):
+                    session['logged_in'] = True
+                    session['username'] = username
+                    return jsonify(result=True)
+
+                return jsonify(result=False)
+
+            return jsonify(result=False)
+
+    return jsonify(result=False)
 
 
 @app.route('/do_reg/', methods=['POST'])
@@ -288,9 +309,10 @@ def upload():
 
 @app.route('/user/<string:page>/<string:page2>/')
 @app.route('/user/<string:page>/')
-def userFunctions(page, page2=""):
+@app.route('/user/')
+def userFunctions(page="", page2=""):
     if (page2 == ""):
-        if (page == 'season'):
+        if (page == 'season' or page == ""):
             return render_template('season.html')
         elif (page == 'profile'):
             return render_template('profile.html')
