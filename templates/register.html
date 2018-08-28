@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% include 'inc/header.html' %}
+    <!-- iCheck -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/iCheck/square/blue.css') }}">
+
+    <style>
+        .register-box {
+            width: 800px;
+            margin: 3% auto;
+        }
+
+        .reg-cam-side {
+            width: 60%;
+            height: 100%;
+            padding: 0px 10px 10px 5px;
+        }
+
+        .reg-detail-side {
+            width: 40%;
+        }
+
+        #cam-view {
+            width: 100%;
+            height: 100%;
+            border: 1px solid;
+            margin-bottom: -6px;
+        }
+
+        .cam-view-holder {
+            width: 100%;
+        }
+
+        .cam-btn-holder {
+            height: 35px;
+            width: 100%;
+        }
+
+        .cam-btn {
+            width: 100%;
+            margin: auto;
+            border: unset;
+            border-radius: unset;
+            height: 100%;
+        }
+
+        .cam-img-holder {
+            width: 400px;
+            height: 60px;
+            margin: auto;
+        }
+
+        .cam-img {
+            width: 80px;
+            height: 60px;
+            display: block;
+            float: left;
+            z-index: 1000;
+            margin: 0;
+            border: 0.2px solid #ccc;
+            padding: 5px;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+    </style>
+</head>
+<body class="hold-transition register-page">
+<div class="register-box">
+    <div class="register-logo">
+        <a href="#"><b>Train </b>Season</a>
+    </div>
+
+    <div class="register-box-body">
+        <p class="login-box-msg">Register a new membership</p>
+
+        {% include 'inc/noti.html' %}
+
+        <div class="pull-left reg-cam-side">
+
+            <div class="cam-view-holder">
+                <video id="cam-view"></video>
+            </div>
+            <div class="cam-btn-holder">
+                <button class="btn-primary btn cam-btn" onclick="capture()" id="cam-capture">Capture</button>
+            </div>
+            <div class="cam-img-holder">
+                <canvas id="canvas" width="800" height="600"></canvas>
+            </div>
+
+        </div>
+
+        <div class="pull-left reg-detail-side">
+            {% from "forms_macro.html" import render_field,render_field_icon,render_checkbox %}
+
+            <form id="frmRegUser" action="/do_reg/" method="post" enctype="multipart/form-data">
+                {{ render_field(form.firstName, placeholder=form.firstName.label.text) }}
+                {{ render_field(form.lastName, placeholder=form.lastName.label.text) }}
+                {{ render_field_icon('envelope',form.email, placeholder=form.email.label.text,error_inline=True) }}
+                {{ render_field_icon('earphone',form.tel, placeholder=form.tel.label.text) }}
+                {{ render_field_icon('lock',form.password, placeholder=form.password.label.text,hide_text=True,error_inline=True) }}
+                {{ render_field_icon('log-in',form.confirm_password, placeholder=form.confirm_password.label.text,error_inline=True) }}
+                <div class="row">
+                    <div class="col-xs-8">
+                        {{ render_checkbox(form.agree_to) }}
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-xs-4">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+            </form>
+            <a href="/login" class="text-center">I already have a membership</a>
+
+        </div>
+
+        <div class="clearfix"></div>
+
+
+    </div>
+    <!-- /.form-box -->
+</div>
+<!-- /.register-box -->
+
+{% include 'inc/js.html' %}
+<!-- iCheck -->
+<script src="{{ url_for('static', filename='plugins/iCheck/icheck.min.js') }}"></script>
+<script>
+    $(function () {
+        $('input').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square-blue',
+            increaseArea: '20%' /* optional */
+        });
+    });
+
+    var video = document.getElementById('cam-view');
+    var canvas = $('#canvas')[0];
+    var context = canvas.getContext('2d');
+    var holder = $('.cam-img-holder');
+    var blobArray = [];
+
+    $(function () {
+
+        if (navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({video: true, audio: false})
+                .then(function (stream) {
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(function (error) {
+                    console.log(error.message);
+                })
+        } else {
+            alert("Your browser dont support!")
+        }
+
+    });
+
+    var count = 0;
+
+    function capture() {
+        count++;
+        if (count <= 10) {
+            context.drawImage(video, 0, 0, 800, 600);
+            holder.append('<img class="cam-img" src="' + canvas.toDataURL('image/png') + '"/>');
+
+            var imgUrl = canvas.toDataURL('image/png');
+            var block = imgUrl.split(";");
+            var contentType = block[0].split(":")[1];
+            var fileType = contentType.split("/")[1];
+            var realData = block[1].split(",")[1];
+
+            var blob = b64toBlob(realData, contentType);
+            var filename = "image" + count + "." + fileType;
+            blobArray.push({blobs: blob, filename: filename});
+
+        }
+    }
+
+    $('#frmRegUser').on('submit', function (e) {
+        e.preventDefault();
+        if (count < 10) {
+            displayNoti('error', 'Please Capture 10 images');
+        } else {
+            var form = document.getElementById('frmRegUser');
+            var formDataToUpload = new FormData(form);
+
+            for (i in blobArray) {
+                formDataToUpload.append("img", blobArray[i].blobs, blobArray[i].filename);
+            }
+
+
+            $.ajax({
+                type: 'POST',
+                url: '/do_reg/',
+                data: formDataToUpload,
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (data) {
+                    console.log(data)
+                    clearNoti();
+                    for (i in data['form_error']) {
+                        msg = data['form_error'][i][0];
+                        displayNoti('error', msg);
+                    }
+                    for (i in data['error']) {
+                        msg = data['error'][i];
+                        displayNoti('error', msg);
+                    }
+                    for (i in data['success']) {
+                        msg = data['success'][i];
+                        displayNoti('success', msg);
+                    }
+                    if (data['value']==true){
+                        location.reload();
+                    }
+                }
+            })
+
+        }
+
+
+    })
+
+
+</script>
+</body>
+</html>

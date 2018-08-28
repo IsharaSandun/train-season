@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% include 'inc/header.html' %}
+</head>
+<!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+<body class="hold-transition skin-blue layout-top-nav">
+<div class="wrapper">
+
+    {% include 'inc/top-nav.html' %}
+
+    <!-- Full Width Column -->
+    <div class="content-wrapper">
+        <div class="container">
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="error-page">
+                    <h2 class="headline text-red">500</h2>
+
+                    <div class="error-content" style="padding-top: 25px">
+                        <h3><i class="fa fa-warning text-red"></i> Oops! Something went wrong.</h3>
+
+                        {#<p>
+                            We will work on fixing that right away.
+                            Meanwhile, you may <a href="../../index.html">return to dashboard</a> or try using the
+                            search form.
+                        </p>#}
+
+                        <p>Error : {{ error }}</p>
+
+
+                    </div>
+                </div>
+                <!-- /.error-page -->
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.container -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    {% include 'inc/footer.html' %}
+
+</div>
+<!-- ./wrapper -->
+
+{% include 'inc/js.html' %}
+
+
+</body>
+</html>
