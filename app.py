@@ -10,6 +10,7 @@ from flask import Flask, render_template, request, url_for, redirect, session, f
 from forms import RegisterForm
 from dbconnect import Database
 from passlib.hash import sha256_crypt, md5_crypt
+from functools import wraps
 
 # for facial recognition
 from packages.preprocess import preprocesses
@@ -32,6 +33,18 @@ PRE_FOLDER = './uploads/pre/'
 CLASSIFIER = './class/classifier.pkl'
 MODEL_DIR = './model'
 npy = ''
+
+def login_required_user(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session and session.get('logged_in') == True and 'user_type' in session and session.get('user_type') == 'user':
+            return f(*args, **kwargs)
+        else:
+            flash("You need to login first",category='e_msg')
+            return redirect(url_for('userLogin'))
+
+    return wrap
+
 
 
 @app.route('/')
@@ -140,7 +153,7 @@ def recognize(filename="img.png"):
                         best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
                         print("Best Predictions ", best_class_probabilities)
 
-                        if best_class_probabilities[0] > 0.7:
+                        if best_class_probabilities[0] > 0.6:
                             print('Result Indices: ', best_class_indices[0])
                             print(HumanNames)
                             for H_i in HumanNames:
@@ -169,6 +182,20 @@ def init():
     return 'init align images'
 
 
+@app.route('/logout/')
+def logout():
+
+    user_type = session.get('user_type')
+
+    session.clear()
+    flash('Your have been Logged out',category='i_msg')
+
+    if user_type == 'user':
+        return redirect(url_for('userLogin'))
+    return redirect(url_for('adminLogin'))
+
+
+
 @app.route('/login/')
 def userLogin():
     return render_template('login.html')
@@ -195,6 +222,7 @@ def doLogin():
         if username == '' and password == '':
             print(request.files.getlist('img'))
             for file in request.files.getlist('img'):
+                print(filename)
                 file.save(destination)
 
             result = recognize(filename)
@@ -204,6 +232,7 @@ def doLogin():
 
             user_details = db.getUserById(result)
             session['logged_in'] = True
+            session['user_type'] = 'user'
             session['username'] = user_details['email']
 
             return jsonify(result=True)
@@ -214,6 +243,7 @@ def doLogin():
             if user_pw is not False:
                 if sha256_crypt.verify(password, db.getUserPassword(username)):
                     session['logged_in'] = True
+                    session['user_type'] = 'user'
                     session['username'] = username
                     return jsonify(result=True)
 
@@ -278,38 +308,11 @@ def doRegister():
 
     return jsonify(form_error=form.errors)
 
-    # return redirect(url_for('register'))
-
-
-@app.route('/upload/', methods=['GET', 'POST'])
-def upload():
-    target = os.path.join(APP_ROOT, 'uploads/')
-    print(target)
-    if not os.path.isdir(target):
-        os.mkdir(target)
-
-    if request.method == 'POST':
-        count = 0
-        username = request.form['user'];
-        print(request.form)
-        for file in request.files.getlist('img'):
-            print(file)
-            count = count + 1
-            # filename = '00' + str(count) + '.png'
-            filename = file.filename
-            print(filename)
-            destination = "/".join([target, filename])
-            print(destination)
-            file.save(destination)
-
-        return "file uploaded"
-
-    return "ooooooppppppssss"
-
 
 @app.route('/user/<string:page>/<string:page2>/')
 @app.route('/user/<string:page>/')
 @app.route('/user/')
+@login_required_user
 def userFunctions(page="", page2=""):
     if (page2 == ""):
         if (page == 'season' or page == ""):

@@ -54,15 +54,13 @@
                 </div>
                 <!-- /.col -->
                 <div class="col-xs-4">
-                    <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                    <button id="btnSubmit" type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
                 </div>
                 <!-- /.col -->
             </div>
         </form>
 
         <br>
-
-        <a href="#">I forgot my password</a><br>
         <a href="/register" class="text-center">Register a new membership</a>
 
     </div>
@@ -121,6 +119,8 @@
         var newForm = new FormData(form);
         newForm.append("img", capture(), 'test.png');
 
+        $('#btnSubmit').attr('disabled',true);
+
         $.ajax({
             type: 'POST',
             url: '/do_login/',
@@ -132,8 +132,9 @@
                 console.log(data)
 
                 if (data.result == true){
-                    window.location.href = '/';
+                    window.location.href = '/user';
                 } else {
+                    $('#btnSubmit').attr('disabled',false);
                     clearNoti();
                     displayNoti('error', 'Invalid User Credentials');
                 }
