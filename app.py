@@ -7,7 +7,7 @@ import os
 
 from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory, send_file, \
     jsonify
-from forms import RegisterForm
+from forms import RegisterForm,AdminLoginForm
 from dbconnect import Database
 from passlib.hash import sha256_crypt, md5_crypt
 from functools import wraps
@@ -34,17 +34,53 @@ CLASSIFIER = './class/classifier.pkl'
 MODEL_DIR = './model'
 npy = ''
 
+
 def login_required_user(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if 'logged_in' in session and session.get('logged_in') == True and 'user_type' in session and session.get('user_type') == 'user':
+        if 'logged_in' in session and session.get('logged_in') == True and 'user_type' in session and session.get(
+                'user_type') == 'user':
             return f(*args, **kwargs)
         else:
-            flash("You need to login first",category='e_msg')
+            flash("You need to login first", category='e_msg')
             return redirect(url_for('userLogin'))
 
     return wrap
 
+
+def login_required_admin(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session and session.get('logged_in') == True and 'user_type' in session and session.get(
+                'user_type') == 'admin':
+            return f(*args, **kwargs)
+        else:
+            flash("You need to login first", category='e_msg')
+            return redirect(url_for('adminLogin'))
+
+    return wrap
+
+def logged_admin(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session and session.get('logged_in') == True and 'user_type' in session and session.get(
+                'user_type') == 'admin':
+            return redirect(url_for('adminFunctions'))
+        else:
+            return f(*args, **kwargs)
+
+    return wrap
+
+def logged_user(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session and session.get('logged_in') == True and 'user_type' in session and session.get(
+                'user_type') == 'admin':
+            return redirect(url_for('userFunctions'))
+        else:
+            return f(*args, **kwargs)
+
+    return wrap
 
 
 @app.route('/')
@@ -184,19 +220,18 @@ def init():
 
 @app.route('/logout/')
 def logout():
-
     user_type = session.get('user_type')
 
     session.clear()
-    flash('Your have been Logged out',category='i_msg')
+    flash('Your have been Logged out', category='i_msg')
 
     if user_type == 'user':
         return redirect(url_for('userLogin'))
     return redirect(url_for('adminLogin'))
 
 
-
 @app.route('/login/')
+@logged_user
 def userLogin():
     return render_template('login.html')
 
@@ -325,16 +360,43 @@ def userFunctions(page="", page2=""):
 
     return render_template('404.html')
 
+@app.route('/pass/<string:hash>/')
+def hashing(hash=""):
+    print(hash)
+    return sha256_crypt.encrypt(hash)
 
-@app.route('/admin/login/')
+
+@app.route('/admin/login/', methods=['POST', 'GET'])
+@logged_admin
 def adminLogin():
-    return render_template('admin/login.html')
+    form = AdminLoginForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+        username = form.email.data
+        password = form.password.data
+
+        admin_pw = db.getAdminPassword(username)
+        if admin_pw is not False:
+            if sha256_crypt.verify(password,admin_pw):
+
+                session['logged_in'] = True
+                session['user_type'] = 'admin'
+                session['username'] = username
+
+                return redirect(url_for('adminFunctions'))
+
+
+
+        flash("Invalid Login Credentials!", category='e_msg')
+
+    return render_template('admin/login.html', form=form)
 
 
 @app.route('/admin/')
 @app.route('/admin/user/<int:id>/')
 @app.route('/admin/<string:page>/<string:page2>/')
 @app.route('/admin/<string:page>/')
+@login_required_admin
 def adminFunctions(page="", page2="", id=-1):
     if (id > 0):
         return render_template('admin/user-details.html')

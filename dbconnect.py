@@ -95,6 +95,20 @@ class Database:
         except Exception as e:
             return "Error: " + str(e)
 
+    def getAdminPassword(self,email):
+        try:
+            conn,cursor = self.connection()
+            cursor = conn.cursor(DictCursor)
+            sql = "SELECT * FROM admin WHERE email=%s"
+            cursor.execute(sql,(email))
+            result = cursor.fetchone()
+            if result is not None:
+                return result['password']
+            return False
+
+        except Exception as e:
+            return "Error: " + str(e)
+
 
 
 if __name__ == '__main__':

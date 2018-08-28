@@ -10,3 +10,8 @@ class RegisterForm(Form):
     password = PasswordField('Password',validators=[InputRequired()])
     confirm_password = PasswordField('Confirm Password',validators=[InputRequired(),EqualTo('password',message="Password Mismatched!")])
     agree_to = BooleanField('I agree to the <a href="#">terms</a>', validators=[InputRequired()])
+
+
+class AdminLoginForm(Form):
+    email = StringField('Email',validators=[InputRequired(),Email()])
+    password = PasswordField('Password',validators=[InputRequired()])
