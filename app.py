@@ -1,8 +1,7 @@
-#FR
+# FR
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
 
 import os
 
@@ -10,7 +9,7 @@ from flask import Flask, render_template, request, url_for, redirect, session, f
     jsonify
 from forms import RegisterForm
 from dbconnect import Database
-from passlib.hash import sha256_crypt
+from passlib.hash import sha256_crypt,md5_crypt
 
 # for facial recognition
 from packages.preprocess import preprocesses
@@ -23,18 +22,16 @@ import tensorflow as tf
 from scipy import misc
 from packages import facenet, detect_face
 
-
-
 app = Flask(__name__)
 app.secret_key = 'my screcret key'
 db = Database()
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 TRAIN_FOLDER = './uploads/train/'
+TEST_FOLDER = './uploads/test/'
 PRE_FOLDER = './uploads/pre/'
 CLASSIFIER = './class/classifier.pkl'
 MODEL_DIR = './model'
 npy = ''
-img_path = 'img.jpg'
 
 
 @app.route('/')
@@ -42,15 +39,11 @@ def home():
     return render_template('starter.html')
 
 
-@app.route('/login/')
-def userLogin():
-    return render_template('login.html')
-
-
 @app.route('/register/', methods=['GET'])
 def register():
     form = RegisterForm(request.form)
     return render_template('register.html', form=form)
+
 
 @app.route('/train/')
 def train():
@@ -60,8 +53,10 @@ def train():
     print('Saved classifier model to file "%s"' % get_file)
     return 'train end'
 
+
 @app.route('/recognize/')
-def recognize():
+def recognize(filename="img.png"):
+    image_path = TEST_FOLDER+filename
     with tf.Graph().as_default():
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.6)
         sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
@@ -71,9 +66,7 @@ def recognize():
             minsize = 20  # minimum size of face
             threshold = [0.6, 0.7, 0.7]  # three steps's threshold
             factor = 0.709  # scale factor
-            margin = 44
             frame_interval = 3
-            batch_size = 1000
             image_size = 182
             input_image_size = 160
 
@@ -95,16 +88,13 @@ def recognize():
             c = 0
 
             print('Start Recognition!')
-            prevTime = 0
-            frame = cv2.imread(img_path, 0)
+            frame = cv2.imread(image_path, 0)
 
             frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)  # resize frame (optional)
 
-            curTime = time.time() + 1  # calc fps
             timeF = frame_interval
 
             if (c % timeF == 0):
-                find_results = []
 
                 if frame.ndim == 2:
                     frame = facenet.to_rgb(frame)
@@ -115,7 +105,6 @@ def recognize():
 
                 if nrof_faces > 0:
                     det = bounding_boxes[:, 0:4]
-                    img_size = np.asarray(frame.shape)[0:2]
 
                     cropped = []
                     scaled = []
@@ -146,17 +135,10 @@ def recognize():
                         emb_array[0, :] = sess.run(embeddings, feed_dict=feed_dict)
                         # print("emb_array",emb_array)
                         predictions = model.predict_proba(emb_array)
-                        print(predictions)
+                        print("Predictions ", predictions)
                         best_class_indices = np.argmax(predictions, axis=1)
-                        print("era", best_class_indices)
                         best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
-                        print(best_class_probabilities)
-
-                        cv2.rectangle(frame, (bb[i][0], bb[i][1]), (bb[i][2], bb[i][3]), (0, 255, 0), 2)  # boxing face
-
-                        # plot result idx under box
-                        text_x = bb[i][0]
-                        text_y = bb[i][3] + 20
+                        print("Best Predictions ", best_class_probabilities)
 
                         if best_class_probabilities[0] > 0.7:
                             print('Result Indices: ', best_class_indices[0])
@@ -165,19 +147,16 @@ def recognize():
                                 # print(H_i)
                                 if HumanNames[best_class_indices[0]] == H_i:
                                     result_names = HumanNames[best_class_indices[0]]
-                                    print("Face Recognized: ",result_names)
-                                    cv2.putText(frame, result_names, (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX_SMALL,
-                                                1, (0, 0, 255), thickness=1, lineType=2)
+                                    print("Face Recognized: ", result_names)
+                                    return jsonify(result=result_names)
                         else:
-                            print('unknown')
-                            cv2.putText(frame, 'Unknown', (text_x, text_y), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1,
-                                        (0, 0, 255), thickness=1, lineType=2)
+                            print('Not Recognized')
+                            return jsonify(result=False)
                 else:
                     print('Unable to align')
-            cv2.imshow('Image', frame)
+                    return jsonify(result=False)
 
-
-    return 'Recognize end'
+    return jsonify(result=False)
 
 
 @app.route('/init/')
@@ -188,6 +167,40 @@ def init():
     print('Total number of images: %d' % nrof_images_total)
     print('Number of successfully aligned images: %d' % nrof_successfully_aligned)
     return 'init align images'
+
+
+@app.route('/login/')
+def userLogin():
+    return render_template('login.html')
+
+def random_name():
+    name = md5_crypt.encrypt(str(time.time())).split("$")[2]
+    return name
+
+
+@app.route('/do_login/', methods=['POST','GET'])
+def doLogin():
+
+    target = os.path.join(APP_ROOT, 'uploads/test/')
+    print(target)
+    if not os.path.isdir(target):
+        os.mkdir(target)
+
+    if request.method == 'POST':
+
+        filename = random_name()+".png"
+
+        for file in request.files.getlist('img'):
+            print(file)
+            print(filename)
+            destination = "/".join([target, filename])
+            print(destination)
+            file.save(destination)
+
+
+        return recognize(filename)
+
+    return jsonify(form_error=[])
 
 
 @app.route('/do_reg/', methods=['POST'])
@@ -233,7 +246,7 @@ def doRegister():
                 print('Saved classifier model to file "%s"' % get_file)
 
                 flash('User registeration succeeded please log in', 's_msg')
-                return jsonify(success=["User Registration Success"],value=True)
+                return jsonify(success=["User Registration Success"], value=True)
 
             else:
                 # flash('User registration failed!', 'e_msg')
