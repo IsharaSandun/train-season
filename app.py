@@ -7,7 +7,7 @@ import os
 
 from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory, send_file, \
     jsonify
-from forms import RegisterForm,AdminLoginForm
+from forms import RegisterForm, AdminLoginForm
 from dbconnect import Database
 from passlib.hash import sha256_crypt, md5_crypt
 from functools import wraps
@@ -60,6 +60,7 @@ def login_required_admin(f):
 
     return wrap
 
+
 def logged_admin(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -70,6 +71,7 @@ def logged_admin(f):
             return f(*args, **kwargs)
 
     return wrap
+
 
 def logged_user(f):
     @wraps(f)
@@ -360,6 +362,7 @@ def userFunctions(page="", page2=""):
 
     return render_template('404.html')
 
+
 @app.route('/pass/<string:hash>/')
 def hashing(hash=""):
     print(hash)
@@ -377,39 +380,61 @@ def adminLogin():
 
         admin_pw = db.getAdminPassword(username)
         if admin_pw is not False:
-            if sha256_crypt.verify(password,admin_pw):
-
+            if sha256_crypt.verify(password, admin_pw):
                 session['logged_in'] = True
                 session['user_type'] = 'admin'
                 session['username'] = username
 
                 return redirect(url_for('adminFunctions'))
 
-
-
         flash("Invalid Login Credentials!", category='e_msg')
 
     return render_template('admin/login.html', form=form)
 
 
-@app.route('/admin/')
-@app.route('/admin/user/<int:id>/')
-@app.route('/admin/<string:page>/<string:page2>/')
-@app.route('/admin/<string:page>/')
-@login_required_admin
-def adminFunctions(page="", page2="", id=-1):
-    if (id > 0):
-        return render_template('admin/user-details.html')
-    elif (page2 == ""):
-        if (page == ''):
-            return render_template('admin/users.html')
-        elif (page == 'profile'):
-            return render_template('admin/profile.html')
-    else:
-        if (page == 'season' and page2 == 'add'):
-            return render_template('season-new.html')
 
-    return render_template('404.html')
+@app.route('/admin/')
+@login_required_admin
+def adminFunctions():
+    pending_users = db.getPendingUsers()
+    active_users = db.getActiveUsers()
+
+    return render_template('admin/users.html', pending_users=pending_users, active_users=active_users)
+
+@app.route('/admin/user/<int:id>/')
+@login_required_admin
+def admin_user_details(id):
+    return render_template('admin/user-details.html')
+
+@app.route('/admin/profile/')
+@login_required_admin
+def admin_profile():
+    return render_template('admin/profile.html')
+
+
+@app.route('/admin/season/add')
+@login_required_admin
+def admin_user_season_add():
+    return render_template('season-new.html')
+
+
+@app.route('/admin/user/approve/<int:id>')
+@login_required_admin
+def approve_users(id):
+    if not db.approveUser(id):
+        flash('Failed to approve the user', category='e_msg')
+    flash('User approved', category='s_msg')
+
+    return redirect(url_for('adminFunctions'))
+
+
+@app.route('/admin/user/approve/<int:id>/trash/')
+@login_required_admin
+def trash_users(id):
+    if not db.trashUser(id):
+        flash('Failed to delete user', category='e_msg')
+    flash('Successfully user removed', category='s_msg')
+    return redirect(url_for('adminFunctions'))
 
 
 @app.errorhandler(404)

@@ -109,6 +109,61 @@ class Database:
         except Exception as e:
             return "Error: " + str(e)
 
+    def getPendingUsers(self):
+        try:
+            conn,cursor = self.connection()
+            cursor = conn.cursor(DictCursor)
+            sql = "SELECT * FROM users WHERE pending=1 AND trash=0"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            conn.close()
+
+            return result
+
+        except Exception as e:
+            return "Error: " + str(e)
+
+    def getActiveUsers(self):
+        try:
+            conn,cursor = self.connection()
+            cursor = conn.cursor(DictCursor)
+            sql = "SELECT users.id,users.season_id, users.fname,users.lname,users.tp,users.email,users.password,users.pending,users.trash, " \
+                  "season.location_from, season.location_to,season.start_date,season.end_date,season.amount,season.date_payment,season.class,season.active " \
+                  "FROM users LEFT JOIN season on users.season_id = season.id "
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            conn.close()
+
+            return result
+
+        except Exception as e:
+            return "Error: " + str(e)
+
+    def approveUser(self,id):
+        try:
+            conn,cursor = self.connection()
+            sql = "UPDATE users SET pending=0 WHERE id=%s AND trash=0"
+            result = cursor.execute(sql,(id))
+            conn.commit()
+            conn.close()
+            return result
+
+        except Exception as e:
+            return "Error: " + str(e)
+
+    def trashUser(self,id):
+        try:
+            conn,cursor = self.connection()
+            sql = "UPDATE users SET trash=1 WHERE id=%s"
+            result = cursor.execute(sql,(id))
+            conn.commit()
+            conn.close()
+            return result
+
+        except Exception as e:
+            return "Error: " + str(e)
+
+
 
 
 if __name__ == '__main__':
@@ -116,3 +171,4 @@ if __name__ == '__main__':
     # print(db.regNewUser('fwef','fwef','0750998544','afaaa@gmail.com','pss'))
     # print(db.getUserById(14))
     # print(db.getUserPassword('e@gmail.com'))
+    print(db.getActiveUsers())
