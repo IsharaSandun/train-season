@@ -137,6 +137,9 @@ class Database:
         except Exception as e:
             return "Error: " + str(e)
 
+
+
+
     def getActiveUsers(self):
         try:
             conn,cursor = self.connection()
@@ -205,6 +208,21 @@ class Database:
             conn.close()
 
             return season_id
+
+        except Exception as e:
+            print("Error: ", str(e))
+
+            return False
+
+    def seasonCancel(self,season_id):
+        try:
+            conn, cursor = self.connection()
+            sql = "UPDATE season SET active=0 WHERE id=%s"
+            result = cursor.execute(sql,(season_id))
+            conn.commit()
+            conn.close()
+
+            return result
 
         except Exception as e:
             print("Error: ", str(e))
@@ -291,6 +309,33 @@ class Database:
             sql = "SELECT * FROM locations"
             cursor.execute(sql)
             result = cursor.fetchall()
+            conn.close()
+            return result
+
+        except Exception as e:
+            return "Error: " + str(e)
+
+
+    def getAdminById(self,id):
+        try:
+            conn,cursor = self.connection()
+            cursor = conn.cursor(DictCursor)
+            sql = "SELECT * FROM admin WHERE id=%s"
+            cursor.execute(sql,(id))
+            result = cursor.fetchone()
+            conn.close()
+            return result
+
+        except Exception as e:
+            return "Error: " + str(e)
+
+    def getAdminByEmail(self,email):
+        try:
+            conn,cursor = self.connection()
+            cursor = conn.cursor(DictCursor)
+            sql = "SELECT * FROM admin WHERE email=%s"
+            cursor.execute(sql,(email))
+            result = cursor.fetchone()
             conn.close()
             return result
 

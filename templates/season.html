@@ -67,7 +67,7 @@
                             {% endif %}
                         </div>
                         <div class="box-footer">
-                            <button type="button" class="btn btn-danger">Cancel</button>
+                            <a href="/user/season/{{ active_season.id }}/deac/" type="button" class="btn btn-danger">Cancel</a>
                             <a href="/user/season/add" style="margin-left: 5px" type="button"
                                class="btn btn-primary pull-right">Add New</a>
                             <button type="button" disabled class="btn btn-info pull-right">Re-New</button>
@@ -90,7 +90,7 @@
                             <th>To</th>
                             <th>Class</th>
                             <th>Valid</th>
-                            <th>Amount</th>
+                            <th>Amount(Rs)</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -101,7 +101,7 @@
                                 <td>{{ session.location_to }}</td>
                                 <td>{{ session.class }}</td>
                                 <td>{{ session.end_date }}</td>
-                                <td>Rs {{ session.amount }}</td>
+                                <td>{{ session.amount }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

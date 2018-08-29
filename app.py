@@ -273,6 +273,7 @@ def doLogin():
                 session['user_type'] = 'user'
                 session['username'] = user_details['email']
                 session['user_id'] = user_details['id']
+                session['user_name'] = user_details['fname'] +" "+user_details['lname']
                 return jsonify(result=True)
 
             return jsonify(result=False,approved=False)
@@ -288,6 +289,7 @@ def doLogin():
                         session['user_type'] = 'user'
                         session['username'] = username
                         session['user_id'] = user_details['id']
+                        session['user_name'] = user_details['fname'] + " " + user_details['lname']
                         return jsonify(result=True)
 
                     return jsonify(result=False,approved=False)
@@ -369,6 +371,20 @@ def userFunctions():
     return render_template('season.html', old_seasons=old_seasons, active_season=active_season, locations_list=locations_list)
 
 
+
+@app.route('/user/season/<int:id>/deac/')
+@login_required_user
+def user_season_cancel(id):
+
+    if db.seasonCancel(id):
+        flash('Season Cancel Successfully','s_msg')
+    else:
+        flash('Season Cancel','e_msg')
+
+    return redirect(url_for('userFunctions'))
+
+
+
 @app.route('/user/season/add/', methods=['POST', 'GET'])
 @login_required_user
 def user_season_add():
@@ -415,7 +431,8 @@ def user_season_add():
 @app.route('/user/profile/')
 @login_required_user
 def user_profile():
-    return render_template('profile.html')
+    user_details = db.getUserById(session.get('user_id'))
+    return render_template('profile.html', user_details=user_details)
 
 
 ### END USER FUNCTIONS ###
@@ -439,9 +456,12 @@ def adminLogin():
         admin_pw = db.getAdminPassword(username)
         if admin_pw is not False:
             if sha256_crypt.verify(password, admin_pw):
+                admin_info = db.getAdminByEmail(username)
                 session['logged_in'] = True
                 session['user_type'] = 'admin'
                 session['username'] = username
+                session['user_id'] = admin_info['id']
+                session['user_name'] = admin_info['fname'] + " " + admin_info['lname']
 
                 return redirect(url_for('adminFunctions'))
 
@@ -508,7 +528,10 @@ def admin_user_set_payment(id):
 @app.route('/admin/profile/')
 @login_required_admin
 def admin_profile():
-    return render_template('admin/profile.html')
+    user_id = session.get('user_id')
+    admin_details = db.getAdminById(user_id)
+    print(admin_details)
+    return render_template('admin/profile.html', admin_details=admin_details)
 
 
 
