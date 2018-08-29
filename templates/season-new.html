@@ -1,6 +1,7 @@
 {% extends 'starter.html' %}
 
 {% block body %}
+    {% from 'forms_macro.html' import render_select %}
     <div class="row">
         <div class="col-md-6">
             <div class="box">
@@ -8,42 +9,22 @@
                     <h3 class="box-title">New Season</h3>
                 </div>
                 <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>From</label>
-                                <select class="form-control select2">
-                                    <option>Galle</option>
-                                    <option>Galle</option>
-                                    <option>Galle</option>
-                                    <option>Galle</option>
-                                </select>
+                    <form id="frmAddSeason" action="/user/season/add/" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ render_select(form.location_to) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ render_select(form.location_from) }}
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>To</label>
-                                <select class="form-control select2">
-                                    <option>Galle</option>
-                                    <option>Galle</option>
-                                    <option>Galle</option>
-                                    <option>Galle</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label>Class</label>
-                        <select class="form-control select2">
-                            <option>First</option>
-                            <option>Second</option>
-                            <option>Third</option>
-                        </select>
-                    </div>
-                    <div class="box-footer">
-                        <button type="submit" disabled class="btn btn-primary pull-right">Add</button>
-                    </div>
+                        {{ render_select(form.season_class) }}
+                        <div class="box-footer">
+                            <button type="submit" class="btn btn-primary pull-right">Add</button>
+                        </div>
+
+                    </form>
                 </div>
             </div>
         </div>

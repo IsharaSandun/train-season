@@ -44,4 +44,12 @@
 {% endmacro %}
 
 
+{% macro render_select(field) %}
+    <div class="form-group">
+        <label>{{ field.label }}</label>
+        {{ field(class_="form-control select2", **kwargs)|safe }}
+    </div>
+{% endmacro %}
+
+
 

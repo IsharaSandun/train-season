@@ -7,7 +7,7 @@ import os
 
 from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory, send_file, \
     jsonify
-from forms import RegisterForm, AdminLoginForm
+from forms import RegisterForm, AdminLoginForm, AddNewSeason
 from dbconnect import Database
 from passlib.hash import sha256_crypt, md5_crypt
 from functools import wraps
@@ -363,10 +363,30 @@ def userFunctions():
     return render_template('season.html', old_seasons=old_seasons, active_season=active_season)
 
 
-@app.route('/user/season/add/')
+@app.route('/user/season/add/', methods=['POST', 'GET'])
 @login_required_user
 def user_season_add():
-    return render_template('season-new.html')
+    locations = db.getLocationList()
+    location_list = [('', '-- Please Select --')]
+    for loc in locations:
+        location_list.append((loc['id'], loc['name']))
+
+    choices_list = [(1, 'First Class'), (2, 'Second Class'), (3, 'Third Class')]
+
+    form = AddNewSeason(request.form)
+    form.location_from.choices = location_list
+    form.location_to.choices = location_list
+    form.season_class.choices = choices_list
+
+    if request.method == 'POST':
+        location_from = form.location_from.data
+        location_to = form.location_to.data
+        season_class = form.season_class.data
+
+        if location_to == location_from:
+            flash('Both locations cannot be same', category='e_msg')
+
+    return render_template('season-new.html', locations=locations, form=form)
 
 
 @app.route('/user/profile/')
