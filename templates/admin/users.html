@@ -73,10 +73,46 @@
                         <td>{{ user.id }}</td>
                         <td>{{ user.fname }} {{ user.lname }}</td>
                         <td>{{ user.email }}</td>
-                        <td>{{ user.location_from }}</td>
-                        <td>{{ user.location_to }}</td>
-                        <td>{{ user.class }}</td>
-                        <td>{{ user.amount }}</td>
+                        <td>
+                            {% if user.location_from != None %}
+                                {% for loc in location_list %}
+                                    {% if loc.id == user.location_from %}
+                                        {{ loc.name }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                None
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.location_from != None %}
+                                {% for loc in location_list %}
+                                    {% if loc.id == user.location_to %}
+                                        {{ loc.name }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                None
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.class == 1 %}
+                                1st Class
+                            {% elif user.class == 2 %}
+                                2nd Class
+                            {% elif user.class == 3 %}
+                                3rd Class
+                            {% else %}
+                                None
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.amount == None %}
+                                None
+                            {% else %}
+                                Rs {{ user.amount }}
+                            {% endif %}
+                        </td>
                         <td>{{ user.date_payment }}</td>
                         <td>
                             <a href="/admin/user/{{ user.id }}" class="btn btn-primary btn-sm">

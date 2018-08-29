@@ -457,8 +457,9 @@ def adminLogin():
 def adminFunctions():
     pending_users = db.getPendingUsers()
     active_users = db.getActiveUsers()
+    location_list = db.getLocationList()
 
-    return render_template('admin/users.html', pending_users=pending_users, active_users=active_users)
+    return render_template('admin/users.html', pending_users=pending_users, active_users=active_users,location_list=location_list)
 
 
 @app.route('/admin/user/<int:id>/')
