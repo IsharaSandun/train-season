@@ -16,19 +16,35 @@
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">From :</label>
-                            <div class="col-sm-7 control-text">{{ active_season.location_from }}</div>
+                            {% for location in locations_list %}
+                                {% if location.id == active_season.location_from %}
+                                    <div class="col-sm-7 control-text">{{ location.name }}</div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">To :</label>
-                            <div class="col-sm-7 control-text">{{ active_season.location_to }}</div>
+                            {% for location in locations_list %}
+                                {% if location.id == active_season.location_to %}
+                                    <div class="col-sm-7 control-text">{{ location.name }}</div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">Class :</label>
-                            <div class="col-sm-7 control-text">{{ active_season.class }}</div>
+                            {% if active_season.class == 1 %}
+                                <div class="col-sm-7 control-text">1st Class</div>
+                            {% elif active_season.class == 2 %}
+                                <div class="col-sm-7 control-text">2nd Class</div>
+                            {% else %}
+                                <div class="col-sm-7 control-text">3rd Class</div>
+                            {% endif %}
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">Valid :</label>
-                            <div class="col-sm-7 control-text">{% if active_season.active == 1 %}{{ active_season.start_date }} to {{ active_season.end_date }}{% endif %}</div>
+                            <div class="col-sm-7 control-text">
+                                {% if active_season.active == 1 %}{{ active_season.start_date }} to
+                                    {{ active_season.end_date }}{% endif %}</div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">Amount :</label>
@@ -40,7 +56,11 @@
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">Active :</label>
-                            <div class="col-sm-7 control-text">{{ active_season.active }}</div>
+                            {% if active_season.active == 0 %}
+                                <div class="col-sm-7 control-text">No</div>
+                            {% else %}
+                                <div class="col-sm-7 control-text">Yes</div>
+                            {% endif %}
                         </div>
                         <div class="box-footer">
                             <button type="button" class="btn btn-danger">Cancel</button>
@@ -71,14 +91,14 @@
                         </thead>
                         <tbody>
                         {% for season in old_seasons %}
-                        <tr>
-                            <td>{{ session.id }}</td>
-                            <td>{{ session.location_from }}</td>
-                            <td>{{ session.location_to }}</td>
-                            <td>{{ session.class }}</td>
-                            <td>{{ session.end_date }}</td>
-                            <td>Rs {{ session.amount }}</td>
-                        </tr>
+                            <tr>
+                                <td>{{ session.id }}</td>
+                                <td>{{ session.location_from }}</td>
+                                <td>{{ session.location_to }}</td>
+                                <td>{{ session.class }}</td>
+                                <td>{{ session.end_date }}</td>
+                                <td>Rs {{ session.amount }}</td>
+                            </tr>
                         {% endfor %}
                         </tbody>
                     </table>

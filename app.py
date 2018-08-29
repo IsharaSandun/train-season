@@ -268,12 +268,14 @@ def doLogin():
                 return jsonify(result=False)
 
             user_details = db.getUserById(result)
-            session['logged_in'] = True
-            session['user_type'] = 'user'
-            session['username'] = user_details['email']
-            session['user_id'] = user_details['id']
+            if user_details['pending'] == 0:
+                session['logged_in'] = True
+                session['user_type'] = 'user'
+                session['username'] = user_details['email']
+                session['user_id'] = user_details['id']
+                return jsonify(result=True)
 
-            return jsonify(result=True)
+            return jsonify(result=False,approved=False)
 
         else:
 
@@ -281,12 +283,14 @@ def doLogin():
             if user_pw is not False:
                 if sha256_crypt.verify(password, db.getUserPassword(username)):
                     user_details = db.getUserByEmail(username)
-                    session['logged_in'] = True
-                    session['user_type'] = 'user'
-                    session['username'] = username
-                    session['user_id'] = user_details['id']
+                    if user_details['pending'] == 0:
+                        session['logged_in'] = True
+                        session['user_type'] = 'user'
+                        session['username'] = username
+                        session['user_id'] = user_details['id']
+                        return jsonify(result=True)
 
-                    return jsonify(result=True)
+                    return jsonify(result=False,approved=False)
 
                 return jsonify(result=False)
 
@@ -357,15 +361,23 @@ def doRegister():
 @login_required_user
 def userFunctions():
     user_id = session.get('user_id')
+    user_info = db.getUserById(user_id)
     old_seasons = db.getSeasonByUserInactive(user_id)
     active_season = db.getSeasonByUserActive(user_id)
+    locations_list = db.getLocationList()
 
-    return render_template('season.html', old_seasons=old_seasons, active_season=active_season)
+    return render_template('season.html', old_seasons=old_seasons, active_season=active_season, locations_list=locations_list)
 
 
 @app.route('/user/season/add/', methods=['POST', 'GET'])
 @login_required_user
 def user_season_add():
+    user_id = session.get('user_id')
+
+    if db.getSeasonByUserActive(user_id) is not None:
+        flash('You already have a activet season','i_msg')
+        return redirect(url_for('userFunctions'))
+
     locations = db.getLocationList()
     location_list = [('', '-- Please Select --')]
     for loc in locations:
@@ -385,6 +397,17 @@ def user_season_add():
 
         if location_to == location_from:
             flash('Both locations cannot be same', category='e_msg')
+        else:
+            season_id = db.addSeason(user_id, location_from, location_to, season_class,1)
+
+            if season_id > 0:
+                if db.updateUserSeasonId(user_id,season_id):
+                    flash('Update user season details','s_msg')
+                else:
+                    flash('User season details update','e_msg')
+                flash('Season applied successfully', 's_msg')
+                return redirect(url_for('userFunctions'))
+            flash('New season application was not success', 'e_msg')
 
     return render_template('season-new.html', locations=locations, form=form)
 

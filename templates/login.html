@@ -133,6 +133,10 @@
 
                 if (data.result == true){
                     window.location.href = '/user';
+                } else if(data.approved == false) {
+                    $('#btnSubmit').attr('disabled',false);
+                    clearNoti();
+                    displayNoti('error', 'User hasnt approved yet');
                 } else {
                     $('#btnSubmit').attr('disabled',false);
                     clearNoti();

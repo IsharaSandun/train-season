@@ -181,6 +181,51 @@ class Database:
         except Exception as e:
             return "Error: " + str(e)
 
+    def getSeasonById(self,id):
+        try:
+            conn,cursor = self.connection()
+            cursor = conn.cursor(DictCursor)
+            sql = "SELECT * FROM season WHERE id=%s"
+            cursor.execute(sql,(id))
+            result = cursor.fetchone()
+            conn.close()
+
+            return result
+
+        except Exception as e:
+            return "Error: " + str(e)
+
+    def addSeason(self,user_id, location_from,location_to, season_class,active):
+        try:
+            conn, cursor = self.connection()
+            sql = "INSERT INTO season (user_id,location_from,location_to,class,active) VALUES (%s,%s,%s,%s,%s)"
+            cursor.execute(sql,(user_id,location_from,location_to,season_class,active))
+            season_id = cursor.lastrowid
+            conn.commit()
+            conn.close()
+
+            return season_id
+
+        except Exception as e:
+            print("Error: ", str(e))
+
+            return False
+
+    def updateUserSeasonId(self,user_id,season_id):
+        try:
+            conn, cursor = self.connection()
+            sql = "UPDATE users SET season_id=%s WHERE id=%s"
+            result = cursor.execute(sql,(season_id,user_id))
+            conn.commit()
+            conn.close()
+
+            return result
+
+        except Exception as e:
+            print("Error: ", str(e))
+
+            return False
+
 
 
     def approveUser(self,id):
@@ -220,6 +265,9 @@ class Database:
 
         except Exception as e:
             return "Error: " + str(e)
+
+
+
 
 
 
