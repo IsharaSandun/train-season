@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
+import os,datetime
 
 from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory, send_file, \
     jsonify
@@ -465,13 +465,52 @@ def adminFunctions():
 @app.route('/admin/user/<int:id>/')
 @login_required_admin
 def admin_user_details(id):
-    return render_template('admin/user-details.html')
+    user_details = db.getUserById(id)
+    active_season = db.getSeasonByUserActive(id)
+    locations_list = db.getLocationList()
+
+    return render_template('admin/user-details.html', user_details=user_details, active_season=active_season, locations_list=locations_list)
+
+
+@app.route('/admin/user/update/<int:id>/',methods=['POST'])
+@login_required_admin
+def admin_user_set_amount(id):
+
+    season_id = db.getSeasonByUserActive(id)['id']
+
+    if request.method == 'POST':
+        amount = request.form.get('amount')
+        if db.setSeasonAmount(season_id,amount) == True:
+            flash('Amount Set','s_msg')
+        else:
+            flash('Amount was not set','e_msg')
+
+    return redirect(url_for('admin_user_details',id=id))
+
+
+@app.route('/admin/user/payment/<int:id>/')
+@login_required_admin
+def admin_user_set_payment(id):
+
+    season_id = db.getSeasonByUserActive(id)['id']
+
+    start_date = str(datetime.date.today())
+    end_date = datetime.date.today() + datetime.timedelta(days=30)
+    date_payment = str(datetime.datetime.today())
+    if db.setSeasonPayementDate(season_id,start_date,end_date,date_payment) == True:
+        flash('Payment marked as paid','s_msg')
+    else:
+        flash('Payment failed','e_msg')
+
+    return redirect(url_for('admin_user_details',id=id))
 
 
 @app.route('/admin/profile/')
 @login_required_admin
 def admin_profile():
     return render_template('admin/profile.html')
+
+
 
 
 @app.route('/admin/season/add')

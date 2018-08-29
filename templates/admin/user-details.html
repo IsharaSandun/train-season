@@ -2,42 +2,130 @@
 
 {% block body %}
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
+            <div class="row">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Current Season</h3>
+                    </div>
+                    <div class="form-horizontal">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Season ID :</label>
+                                <div class="col-sm-7 control-text">{{ active_season.id }}</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">From :</label>
+                                {% for location in locations_list %}
+                                    {% if location.id == active_season.location_from %}
+                                        <div class="col-sm-7 control-text">{{ location.name }}</div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">To :</label>
+                                {% for location in locations_list %}
+                                    {% if location.id == active_season.location_to %}
+                                        <div class="col-sm-7 control-text">{{ location.name }}</div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Class :</label>
+                                {% if active_season.class == 1 %}
+                                    <div class="col-sm-7 control-text">1st Class</div>
+                                {% elif active_season.class == 2 %}
+                                    <div class="col-sm-7 control-text">2nd Class</div>
+                                {% elif active_season.class == 3 %}
+                                    <div class="col-sm-7 control-text">3rd Class</div>
+                                {% else %}
+                                    <div class="col-sm-7 control-text"></div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Valid :</label>
+                                <div class="col-sm-7 control-text">
+                                    {% if active_season.active == 1 %}{{ active_season.start_date }} to
+                                        {{ active_season.end_date }}{% endif %}</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Amount :</label>
+                                <div class="col-sm-7 control-text">{{ active_season.amount }}</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Payment Date :</label>
+                                <div class="col-sm-7 control-text">{{ active_season.date_payment }}</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Active :</label>
+                                {% if active_season.active == 0 %}
+                                    <div class="col-sm-7 control-text">No</div>
+                                {% elif active_season.active == 1 %}
+                                    <div class="col-sm-7 control-text">Yes</div>
+                                {% else %}
+                                    <div class="col-sm-7 control-text"></div>
+                                {% endif %}
+                            </div>
+                            <div class="box-footer">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if active_season.date_payment == None %}
+                <div class="row">
+                    <div class="box">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Update Season</h3>
+                        </div>
+                        <form action="/admin/user/update/{{ user_details.id }}/" method="post">
+                            <div class="form-horizontal">
+                                <div class="box-body">
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">Amount</label>
+                                        <div class="col-sm-8">
+                                            <input name="amount" type="number" step="any" class="form-control"
+                                                   placeholder="2000">
+                                        </div>
+                                    </div>
+                                    <div class="box-footer">
+                                        <a href="/admin/user/payment/{{ user_details.id }}/" style="margin-left: 5px"
+                                           type="button" class="btn btn-success">Payment Received</a>
+                                        <button type="submit" class="btn btn-primary pull-right">Set Amount</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h3 class="box-title">Profile</h3>
                 </div>
                 <div class="box-body">
                     <div class="row">
-
-                        <div class="col-md-4">
-                            <img class="profile-user-img img-responsive img-circle"
-                                 src="{{ url_for('static',filename='dist/img/user4-128x128.jpg') }}"
-                                 alt="User profile picture">
-
-                            <h3 class="profile-username text-center">Nina Mcintire</h3>
-
-                            <p class="text-muted text-center">Software Engineer</p>
-
-                        </div>
                         <div class="col-md-8">
                             <form action="" method="post">
                                 <div class="form-horizontal">
                                     <div class="form-group">
                                         <label class="col-sm-5 control-label">ID :</label>
-                                        <div class="col-sm-5 control-text">P0001</div>
+                                        <div class="col-sm-5 control-text">{{ user_details.id }}</div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-sm-5 control-label">First Name :</label>
-                                        <div class="col-sm-5 control-text">Ishara</div>
+                                        <div class="col-sm-5 control-text">{{ user_details.fname }}</div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-sm-5 control-label">Last Name :</label>
-                                        <div class="col-sm-5 control-text">Sandun</div>
+                                        <div class="col-sm-5 control-text">{{ user_details.lname }}</div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-sm-5 control-label">Telephone :</label>
-                                        <div class="col-sm-5 control-text">+94770885246</div>
+                                        <div class="col-sm-5 control-text">{{ user_details.tp }}</div>
                                     </div>
                                 </div>
                             </form>

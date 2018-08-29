@@ -211,6 +211,37 @@ class Database:
 
             return False
 
+
+    def setSeasonAmount(self,season_id,amount):
+        try:
+            conn, cursor = self.connection()
+            sql = "UPDATE season SET amount=%s WHERE id=%s"
+            result = cursor.execute(sql,(amount,season_id))
+            conn.commit()
+            conn.close()
+
+            return result
+
+        except Exception as e:
+            print("Error: ", str(e))
+
+            return False
+
+    def setSeasonPayementDate(self,id,start_date,end_date,date_payment):
+        try:
+            conn, cursor = self.connection()
+            sql = "UPDATE season SET start_date=%s , end_date=%s, date_payment=%s WHERE id=%s"
+            result = cursor.execute(sql,(start_date,end_date,date_payment,id))
+            conn.commit()
+            conn.close()
+
+            return result
+
+        except Exception as e:
+            print("Error: ", str(e))
+
+            return False
+
     def updateUserSeasonId(self,user_id,season_id):
         try:
             conn, cursor = self.connection()
