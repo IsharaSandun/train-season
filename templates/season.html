@@ -12,35 +12,35 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label class="col-sm-5 control-label">Season ID :</label>
-                            <div class="col-sm-7 control-text">S0001</div>
+                            <div class="col-sm-7 control-text">{{ active_season.id }}</div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">From :</label>
-                            <div class="col-sm-7 control-text">Galle</div>
+                            <div class="col-sm-7 control-text">{{ active_season.location_from }}</div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">To :</label>
-                            <div class="col-sm-7 control-text">Colombo</div>
+                            <div class="col-sm-7 control-text">{{ active_season.location_to }}</div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">Class :</label>
-                            <div class="col-sm-7 control-text">2nd Class</div>
+                            <div class="col-sm-7 control-text">{{ active_season.class }}</div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">Valid :</label>
-                            <div class="col-sm-7 control-text">2018-08-01 to 2018-09-01</div>
+                            <div class="col-sm-7 control-text">{% if active_season.active == 1 %}{{ active_season.start_date }} to {{ active_season.end_date }}{% endif %}</div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">Amount :</label>
-                            <div class="col-sm-7 control-text">Rs 2000</div>
+                            <div class="col-sm-7 control-text">{{ active_season.amount }}</div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">Payment Date :</label>
-                            <div class="col-sm-7 control-text">None</div>
+                            <div class="col-sm-7 control-text">{{ active_season.date_payment }}</div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-5 control-label">Active :</label>
-                            <div class="col-sm-7 control-text">Yes</div>
+                            <div class="col-sm-7 control-text">{{ active_season.active }}</div>
                         </div>
                         <div class="box-footer">
                             <button type="button" class="btn btn-danger">Cancel</button>
@@ -70,14 +70,16 @@
                         </tr>
                         </thead>
                         <tbody>
+                        {% for season in old_seasons %}
                         <tr>
-                            <td>S0001</td>
-                            <td>Galle</td>
-                            <td>Colombo</td>
-                            <td>3rd Class</td>
-                            <td>2018-09-01</td>
-                            <td>Rs 2000</td>
+                            <td>{{ session.id }}</td>
+                            <td>{{ session.location_from }}</td>
+                            <td>{{ session.location_to }}</td>
+                            <td>{{ session.class }}</td>
+                            <td>{{ session.end_date }}</td>
+                            <td>Rs {{ session.amount }}</td>
                         </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
 

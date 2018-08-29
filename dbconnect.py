@@ -49,6 +49,20 @@ class Database:
         except Exception as e:
             return "Error: " + str(e)
 
+    def getUserByEmail(self,email):
+        try:
+            conn,cursor = self.connection()
+            cursor = conn.cursor(DictCursor)
+            sql = "SELECT * FROM users WHERE email=%s"
+            cursor.execute(sql,(email))
+            result = cursor.fetchone()
+            if result is not None:
+                return result
+            return False
+
+        except Exception as e:
+            return "Error: " + str(e)
+
     def checkUserExists(self,email):
         try:
             conn, cursor = self.connection()
@@ -129,7 +143,7 @@ class Database:
             cursor = conn.cursor(DictCursor)
             sql = "SELECT users.id,users.season_id, users.fname,users.lname,users.tp,users.email,users.password,users.pending,users.trash, " \
                   "season.location_from, season.location_to,season.start_date,season.end_date,season.amount,season.date_payment,season.class,season.active " \
-                  "FROM users LEFT JOIN season on users.season_id = season.id "
+                  "FROM users LEFT JOIN season on users.season_id = season.id where users.pending = 0"
             cursor.execute(sql)
             result = cursor.fetchall()
             conn.close()
@@ -138,6 +152,36 @@ class Database:
 
         except Exception as e:
             return "Error: " + str(e)
+
+    def getSeasonByUserInactive(self,id):
+        try:
+            conn,cursor = self.connection()
+            cursor = conn.cursor(DictCursor)
+            sql = "SELECT * FROM season WHERE active=0 and user_id=%s"
+            cursor.execute(sql,(id))
+            result = cursor.fetchall()
+            conn.close()
+
+            return result
+
+        except Exception as e:
+            return "Error: " + str(e)
+
+    def getSeasonByUserActive(self,id):
+        try:
+            conn,cursor = self.connection()
+            cursor = conn.cursor(DictCursor)
+            sql = "SELECT * FROM season WHERE active=1 and user_id=%s"
+            cursor.execute(sql,(id))
+            result = cursor.fetchone()
+            conn.close()
+
+            return result
+
+        except Exception as e:
+            return "Error: " + str(e)
+
+
 
     def approveUser(self,id):
         try:
@@ -171,4 +215,4 @@ if __name__ == '__main__':
     # print(db.regNewUser('fwef','fwef','0750998544','afaaa@gmail.com','pss'))
     # print(db.getUserById(14))
     # print(db.getUserPassword('e@gmail.com'))
-    print(db.getActiveUsers())
+    print(db.getSeasonByUserInactive(1))

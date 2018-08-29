@@ -271,6 +271,7 @@ def doLogin():
             session['logged_in'] = True
             session['user_type'] = 'user'
             session['username'] = user_details['email']
+            session['user_id'] = user_details['id']
 
             return jsonify(result=True)
 
@@ -279,9 +280,12 @@ def doLogin():
             user_pw = db.getUserPassword(username)
             if user_pw is not False:
                 if sha256_crypt.verify(password, db.getUserPassword(username)):
+                    user_details = db.getUserByEmail(username)
                     session['logged_in'] = True
                     session['user_type'] = 'user'
                     session['username'] = username
+                    session['user_id'] = user_details['id']
+
                     return jsonify(result=True)
 
                 return jsonify(result=False)
@@ -346,21 +350,32 @@ def doRegister():
     return jsonify(form_error=form.errors)
 
 
-@app.route('/user/<string:page>/<string:page2>/')
-@app.route('/user/<string:page>/')
+### USER FUNCTIONS ###
+
+@app.route('/user/season/')
 @app.route('/user/')
 @login_required_user
-def userFunctions(page="", page2=""):
-    if (page2 == ""):
-        if (page == 'season' or page == ""):
-            return render_template('season.html')
-        elif (page == 'profile'):
-            return render_template('profile.html')
-    else:
-        if (page == 'season' and page2 == 'add'):
-            return render_template('season-new.html')
+def userFunctions():
+    user_id = session.get('user_id')
+    old_seasons = db.getSeasonByUserInactive(user_id)
+    active_season = db.getSeasonByUserActive(user_id)
 
-    return render_template('404.html')
+    return render_template('season.html', old_seasons=old_seasons, active_season=active_season)
+
+
+@app.route('/user/season/add/')
+@login_required_user
+def user_season_add():
+    return render_template('season-new.html')
+
+
+@app.route('/user/profile/')
+@login_required_user
+def user_profile():
+    return render_template('profile.html')
+
+
+### END USER FUNCTIONS ###
 
 
 @app.route('/pass/<string:hash>/')
@@ -392,6 +407,7 @@ def adminLogin():
     return render_template('admin/login.html', form=form)
 
 
+### ADMIN FUNCTIONS ###
 
 @app.route('/admin/')
 @login_required_admin
@@ -401,10 +417,12 @@ def adminFunctions():
 
     return render_template('admin/users.html', pending_users=pending_users, active_users=active_users)
 
+
 @app.route('/admin/user/<int:id>/')
 @login_required_admin
 def admin_user_details(id):
     return render_template('admin/user-details.html')
+
 
 @app.route('/admin/profile/')
 @login_required_admin
@@ -435,6 +453,9 @@ def trash_users(id):
         flash('Failed to delete user', category='e_msg')
     flash('Successfully user removed', category='s_msg')
     return redirect(url_for('adminFunctions'))
+
+
+### END ADMIN FUNCTIONS ###
 
 
 @app.errorhandler(404)
