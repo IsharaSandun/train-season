@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os,datetime
+import os, datetime
 
 from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory, send_file, \
     jsonify
@@ -115,7 +115,7 @@ def recognize(filename="img.png"):
             pnet, rnet, onet = detect_face.create_mtcnn(sess, npy)
 
             minsize = 20  # minimum size of face
-            threshold = [0.6, 0.7, 0.7]  # three steps's threshold
+            threshold = [0.6, 0.6, 0.6]  # three steps's threshold
             factor = 0.709  # scale factor
             frame_interval = 3
             image_size = 182
@@ -238,8 +238,10 @@ def userLogin():
     return render_template('login.html')
 
 
+@app.route('/random/')
 def random_name():
     name = md5_crypt.encrypt(str(time.time())).split("$")[2]
+    name = ''.join(e for e in name if e.isalnum())
     return name
 
 
@@ -273,10 +275,10 @@ def doLogin():
                 session['user_type'] = 'user'
                 session['username'] = user_details['email']
                 session['user_id'] = user_details['id']
-                session['user_name'] = user_details['fname'] +" "+user_details['lname']
+                session['user_name'] = user_details['fname'] + " " + user_details['lname']
                 return jsonify(result=True)
 
-            return jsonify(result=False,approved=False)
+            return jsonify(result=False, approved=False)
 
         else:
 
@@ -292,7 +294,7 @@ def doLogin():
                         session['user_name'] = user_details['fname'] + " " + user_details['lname']
                         return jsonify(result=True)
 
-                    return jsonify(result=False,approved=False)
+                    return jsonify(result=False, approved=False)
 
                 return jsonify(result=False)
 
@@ -367,21 +369,19 @@ def userFunctions():
     active_season = db.getSeasonByUserActive(user_id)
     locations_list = db.getLocationList()
 
-    return render_template('season.html', old_seasons=old_seasons, active_season=active_season, locations_list=locations_list)
-
+    return render_template('season.html', old_seasons=old_seasons, active_season=active_season,
+                           locations_list=locations_list)
 
 
 @app.route('/user/season/<int:id>/deac/')
 @login_required_user
 def user_season_cancel(id):
-
     if db.seasonCancel(id):
-        flash('Season Cancel Successfully','s_msg')
+        flash('Season Cancel Successfully', 's_msg')
     else:
-        flash('Season Cancel','e_msg')
+        flash('Season Cancel', 'e_msg')
 
     return redirect(url_for('userFunctions'))
-
 
 
 @app.route('/user/season/add/', methods=['POST', 'GET'])
@@ -390,7 +390,7 @@ def user_season_add():
     user_id = session.get('user_id')
 
     if db.getSeasonByUserActive(user_id) is not None:
-        flash('You already have a activet season','i_msg')
+        flash('You already have a activet season', 'i_msg')
         return redirect(url_for('userFunctions'))
 
     locations = db.getLocationList()
@@ -413,13 +413,13 @@ def user_season_add():
         if location_to == location_from:
             flash('Both locations cannot be same', category='e_msg')
         else:
-            season_id = db.addSeason(user_id, location_from, location_to, season_class,1)
+            season_id = db.addSeason(user_id, location_from, location_to, season_class, 1)
 
             if season_id > 0:
-                if db.updateUserSeasonId(user_id,season_id):
-                    flash('Update user season details','s_msg')
+                if db.updateUserSeasonId(user_id, season_id):
+                    flash('Update user season details', 's_msg')
                 else:
-                    flash('User season details update','e_msg')
+                    flash('User season details update', 'e_msg')
                 flash('Season applied successfully', 's_msg')
                 return redirect(url_for('userFunctions'))
             flash('New season application was not success', 'e_msg')
@@ -478,7 +478,8 @@ def adminFunctions():
     active_users = db.getActiveUsers()
     location_list = db.getLocationList()
 
-    return render_template('admin/users.html', pending_users=pending_users, active_users=active_users,location_list=location_list)
+    return render_template('admin/users.html', pending_users=pending_users, active_users=active_users,
+                           location_list=location_list)
 
 
 @app.route('/admin/user/<int:id>/')
@@ -488,40 +489,39 @@ def admin_user_details(id):
     active_season = db.getSeasonByUserActive(id)
     locations_list = db.getLocationList()
 
-    return render_template('admin/user-details.html', user_details=user_details, active_season=active_season, locations_list=locations_list)
+    return render_template('admin/user-details.html', user_details=user_details, active_season=active_season,
+                           locations_list=locations_list)
 
 
-@app.route('/admin/user/update/<int:id>/',methods=['POST'])
+@app.route('/admin/user/update/<int:id>/', methods=['POST'])
 @login_required_admin
 def admin_user_set_amount(id):
-
     season_id = db.getSeasonByUserActive(id)['id']
 
     if request.method == 'POST':
         amount = request.form.get('amount')
-        if db.setSeasonAmount(season_id,amount) == True:
-            flash('Amount Set','s_msg')
+        if db.setSeasonAmount(season_id, amount) == True:
+            flash('Amount Set', 's_msg')
         else:
-            flash('Amount was not set','e_msg')
+            flash('Amount was not set', 'e_msg')
 
-    return redirect(url_for('admin_user_details',id=id))
+    return redirect(url_for('admin_user_details', id=id))
 
 
 @app.route('/admin/user/payment/<int:id>/')
 @login_required_admin
 def admin_user_set_payment(id):
-
     season_id = db.getSeasonByUserActive(id)['id']
 
     start_date = str(datetime.date.today())
     end_date = datetime.date.today() + datetime.timedelta(days=30)
     date_payment = str(datetime.datetime.today())
-    if db.setSeasonPayementDate(season_id,start_date,end_date,date_payment) == True:
-        flash('Payment marked as paid','s_msg')
+    if db.setSeasonPayementDate(season_id, start_date, end_date, date_payment) == True:
+        flash('Payment marked as paid', 's_msg')
     else:
-        flash('Payment failed','e_msg')
+        flash('Payment failed', 'e_msg')
 
-    return redirect(url_for('admin_user_details',id=id))
+    return redirect(url_for('admin_user_details', id=id))
 
 
 @app.route('/admin/profile/')
@@ -531,8 +531,6 @@ def admin_profile():
     admin_details = db.getAdminById(user_id)
     print(admin_details)
     return render_template('admin/profile.html', admin_details=admin_details)
-
-
 
 
 @app.route('/admin/season/add')
