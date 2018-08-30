@@ -353,4 +353,4 @@ if __name__ == '__main__':
     # print(db.regNewUser('fwef','fwef','0750998544','afaaa@gmail.com','pss'))
     # print(db.getUserById(14))
     # print(db.getUserPassword('e@gmail.com'))
-    print(db.getLocationList())
+    print(db.getSeasonByUserInactive(2))

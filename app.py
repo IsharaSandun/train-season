@@ -363,7 +363,6 @@ def doRegister():
 @login_required_user
 def userFunctions():
     user_id = session.get('user_id')
-    user_info = db.getUserById(user_id)
     old_seasons = db.getSeasonByUserInactive(user_id)
     active_season = db.getSeasonByUserActive(user_id)
     locations_list = db.getLocationList()

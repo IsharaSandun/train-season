@@ -94,14 +94,27 @@
                         </tr>
                         </thead>
                         <tbody>
+
                         {% for season in old_seasons %}
                             <tr>
-                                <td>{{ session.id }}</td>
-                                <td>{{ session.location_from }}</td>
-                                <td>{{ session.location_to }}</td>
-                                <td>{{ session.class }}</td>
-                                <td>{{ session.end_date }}</td>
-                                <td>{{ session.amount }}</td>
+                                <td>{{ season.id }}</td>
+                                <td>
+                                    {% for loca in locations_list %}
+                                        {% if loca.id == season.location_from %}
+                                            {{ loca.name }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for loca in locations_list %}
+                                        {% if loca.id == season.location_to %}
+                                            {{ loca.name }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>{{ season.class }}</td>
+                                <td>{{ season.end_date }}</td>
+                                <td>{{ season.amount }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
