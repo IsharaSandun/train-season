@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Aug 30, 2018 at 10:02 AM
+-- Generation Time: Aug 31, 2018 at 04:30 AM
 -- Server version: 5.7.19
 -- PHP Version: 5.6.31
 
@@ -21,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `train_season`
 --
+CREATE DATABASE IF NOT EXISTS `train_season` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `train_season`;
 
 -- --------------------------------------------------------
 
@@ -383,19 +385,7 @@ CREATE TABLE IF NOT EXISTS `season` (
   `class` int(1) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `season`
---
-
-INSERT INTO `season` (`id`, `user_id`, `location_from`, `location_to`, `start_date`, `end_date`, `amount`, `date_payment`, `class`, `active`) VALUES
-(1, 1, 33, 1, '2018-08-30', '2018-09-29', 3500, '2018-08-30 01:33:40', 2, 1),
-(2, 2, 70, 36, '2018-08-30', '2018-09-29', 3000, '2018-08-30 01:47:29', 3, 0),
-(3, 2, 39, 2, NULL, NULL, NULL, NULL, 2, 0),
-(4, 2, 39, 5, NULL, NULL, NULL, NULL, 3, 1),
-(5, 3, 4, 14, '2018-08-30', '2018-09-29', 3500, '2018-08-30 09:43:57', 2, 0),
-(6, 5, 16, 3, '2018-08-30', '2018-09-29', 2000, '2018-08-30 15:30:14', 2, 0);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -417,17 +407,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `season_id` (`season_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `season_id`, `fname`, `lname`, `tp`, `email`, `password`, `pending`, `trash`) VALUES
-(1, '1', 'Eranda ', 'Hasaranga', '07509984422', 'e@gmail.com', '$5$rounds=535000$Sv0HNiZ0lN5LnTvc$AWZDx.3qcTIBoVlyxCP1O1QOkMxrUwEvNiLUIayda23', 0, 0),
-(2, '4', 'Ishara ', 'Sandun', '07501224488', 'ishara@gmail.com', '$5$rounds=535000$m6aE77ZI2euNq9IA$FT89TCNxPPY0LhwwxjLhnarx1y8uIY.3tge3M488Yz7', 0, 0),
-(3, '5', 'Anuruddha', 'Perera', '075009948684', 'a@gmail.com', '$5$rounds=535000$V0QbHu3ZdFs2UiQJ$nKiu9JsplRsxMwVYoPVtcpOjY/8r9yAm39CUv.aFUTA', 0, 0),
-(5, '6', 'geeth', 'dew', '0478916585214', 'g@g.com', '$5$rounds=535000$lMrjzwOCPh43MlmQ$dfeFA3PZ79fFFMjQMq5zN861Y1tgwyNR8qGhAm3jLh2', 0, 0);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
