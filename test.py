@@ -22,128 +22,68 @@ class FlaskTestCase(unittest.TestCase):
         response = tester.get('/login/', content_type='html/text')
         self.assertEqual(response.status_code, 200)
 
-    # Ensure the login behave correctly when given the correct credentials
-    def test_user_dashboard_page_load(self):
+    def check_user_logging(self):
         tester = app.test_client(self)
-        response = tester.post(
-            '/login/',
-            data=dict(email="e@gmail.com", password="a"),
-            follow_redirects=True
-        )
-        self.assertTrue(b'You just logged in..', response.data)
-        self.assertTrue(response.status_code, 202)
+        response = tester.get('/login/',data=dict(email='e@gmail.com',password='a'),follow_redirects=True)
+        self.assertIn(b'incorrect', response.data)
 
-        def test_user_dashboard_page_load(self):
-            tester = app.test_client(self)
-            response = tester.get('/user/', content_type='html/text')
+    def check_user_logout(self):
+        tester = app.test_client(self)
+        response = tester.get('/logout/',follow_redirects=True)
+        self.assertIn(b'session', response.data)
+
+
+    def test_user_page(self):
+        with app.test_client() as client:
+            with client.session_transaction() as sess:
+                sess["logged_in"] = True
+                sess["user_type"] = 'user'
+            response = client.get('/user/', content_type='html/text')
             self.assertEqual(response.status_code, 200)
 
-    def test_user_season_add_page_load(self):
-        tester = app.test_client(self)
-        response = tester.post(
-            '/login/',
-            data=dict(email="e@gmail.com", password="a"),
-            follow_redirects=True
-        )
-        self.assertTrue(b'You just logged in..', response.data)
-        self.assertTrue(response.status_code, 202)
-
-        def test_user_season_add_page_load(self):
-            tester = app.test_client(self)
-            response = tester.get('/user/season/add/', content_type='html/text')
+    def test_user_profile_page(self):
+        with app.test_client() as client:
+            with client.session_transaction() as sess:
+                sess["logged_in"] = True
+                sess["user_type"] = 'user'
+            response = client.get('/user/profile/', content_type='html/text')
             self.assertEqual(response.status_code, 200)
 
-    def test_user_profile_page_load(self):
+    def check_admin_logging(self):
         tester = app.test_client(self)
-        response = tester.post(
-            '/login/',
-            data=dict(email="e@gmail.com", password="a"),
-            follow_redirects=True
-        )
-        self.assertTrue(b'You just logged in..', response.data)
-        self.assertTrue(response.status_code, 202)
+        response = tester.get('/admin/login/',data=dict(email='admin@gmail.com',password='a'),follow_redirects=True)
+        self.assertIn(b'incorrect', response.data)
 
-        def test_user_profile_page_load(self):
-            tester = app.test_client(self)
-            response = tester.get('/user/profile/', content_type='html/text')
+    def check_admin_logout(self):
+        tester = app.test_client(self)
+        response = tester.get('/logout/',follow_redirects=True)
+        self.assertIn(b'session', response.data)
+
+
+    def test_admin_home_page(self):
+        with app.test_client() as client:
+            with client.session_transaction() as sess:
+                sess["logged_in"] = True
+                sess["user_type"] = 'admin'
+            response = client.get('/admin/', content_type='html/text')
             self.assertEqual(response.status_code, 200)
 
-
-    def test_admin_login_page_load(self):
-        tester = app.test_client(self)
-        response = tester.get('/admin/login/', content_type='html/text')
-        self.assertEqual(response.status_code, 200)
-
-
-    def test_user_profile_page_load(self):
-        tester = app.test_client(self)
-        response = tester.post(
-            '/login/',
-            data=dict(email="e@gmail.com", password="a"),
-            follow_redirects=True
-        )
-        self.assertTrue(b'You just logged in..', response.data)
-        self.assertTrue(response.status_code, 202)
-
-
-        def test_user_profile_page_load(self):
-            tester = app.test_client(self)
-            response = tester.post(
-                '/login/',
-                data=dict(email="e@gmail.com", password="a"),
-                follow_redirects=True
-            )
-            self.assertTrue(b'You just logged in..', response.data)
-            self.assertTrue(response.status_code, 202)
-
-
-    def test_admin_dashboard_page_load(self):
-        tester = app.test_client(self)
-        response = tester.post(
-            '/login/',
-            data=dict(email="admin@gmail.com", password="a"),
-            follow_redirects=True
-        )
-        self.assertTrue(b'You just logged in..', response.data)
-        self.assertTrue(response.status_code, 202)
-
-        def test_admin_dashboard_page_load(self):
-            tester = app.test_client(self)
-            response = tester.get('/admin/', content_type='html/text')
+    def test_admin_profile_page(self):
+        with app.test_client() as client:
+            with client.session_transaction() as sess:
+                sess["logged_in"] = True
+                sess["user_type"] = 'admin'
+            response = client.get('/admin/profile/', content_type='html/text')
             self.assertEqual(response.status_code, 200)
 
-
-
-    def test_admin_dashboard_page_load(self):
-        tester = app.test_client(self)
-        response = tester.post(
-            '/login/',
-            data=dict(email="admin@gmail.com", password="a"),
-            follow_redirects=True
-        )
-        self.assertTrue(b'You just logged in..', response.data)
-        self.assertTrue(response.status_code, 202)
-
-        def test_admin_profile_page_load(self):
-            tester = app.test_client(self)
-            response = tester.get('/admin/', content_type='html/text')
+    def test_admin_user_view_page(self):
+        with app.test_client() as client:
+            with client.session_transaction() as sess:
+                sess["logged_in"] = True
+                sess["user_type"] = 'admin'
+            response = client.get('/admin/user/1/', content_type='html/text')
             self.assertEqual(response.status_code, 200)
 
-
-
-    def test_admin_view_user_page_load(self):
-        tester = app.test_client(self)
-        response = tester.post(
-            '/login/',
-            data=dict(email="admin@gmail.com", password="a"),
-            follow_redirects=True
-        )
-        self.assertTrue(b'You just logged in..', response.data)
-        self.assertTrue(response.status_code, 202)
-        def test_admin_view_user_page_load(self):
-            tester = app.test_client(self)
-            response = tester.get('/admin/user/1/', content_type='html/text')
-            self.assertEqual(response.status_code, 200)
 
 
 class TripletLossTest(unittest.TestCase):
