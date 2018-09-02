@@ -8,7 +8,7 @@ import numpy as np
 import tensorflow as tf
 from scipy import misc
 
-from packages import facenet, detect_face
+from packages import net, detect_face
 
 
 class preprocesses:
@@ -21,7 +21,7 @@ class preprocesses:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        dataset = facenet.get_dataset(self.input_datadir)
+        dataset = net.get_dataset(self.input_datadir)
         with tf.Graph().as_default():
             gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
             sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
@@ -62,7 +62,7 @@ class preprocesses:
                                 text_file.write('%s\n' % (output_filename))
                                 continue
                             if img.ndim == 2:
-                                img = facenet.to_rgb(img)
+                                img = net.to_rgb(img)
                                 print('to_rgb data dimension: ', img.ndim)
                             img = img[:, :, 0:3]
 

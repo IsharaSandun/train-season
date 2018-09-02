@@ -10,7 +10,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.svm import SVC
 
-from packages import facenet
+from packages import net
 
 
 class training:
@@ -22,12 +22,12 @@ class training:
     def main_train(self):
         with tf.Graph().as_default():
             with tf.Session() as sess:
-                img_data = facenet.get_dataset(self.datadir)
-                path, label = facenet.get_image_paths_and_labels(img_data)
+                img_data = net.get_dataset(self.datadir)
+                path, label = net.get_image_paths_and_labels(img_data)
                 print('Classes: %d' % len(img_data))
                 print('Images: %d' % len(path))
 
-                facenet.load_model(self.modeldir)
+                net.load_model(self.modeldir)
                 images_placeholder = tf.get_default_graph().get_tensor_by_name("input:0")
                 embeddings = tf.get_default_graph().get_tensor_by_name("embeddings:0")
                 phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
@@ -43,7 +43,7 @@ class training:
                     start_index = i * batch_size
                     end_index = min((i + 1) * batch_size, nrof_images)
                     paths_batch = path[start_index:end_index]
-                    images = facenet.load_data(paths_batch, False, False, image_size)
+                    images = net.load_data(paths_batch, False, False, image_size)
                     feed_dict = {images_placeholder: images, phase_train_placeholder: False}
                     emb_array[start_index:end_index, :] = sess.run(embeddings, feed_dict=feed_dict)
 

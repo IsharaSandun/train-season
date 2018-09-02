@@ -2,7 +2,7 @@ from app import app
 import unittest
 import tensorflow as tf
 import numpy as np
-import packages.facenet as facenet
+import packages.net as facenet
 
 
 class FlaskTestCase(unittest.TestCase):

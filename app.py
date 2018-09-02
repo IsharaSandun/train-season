@@ -21,7 +21,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 from scipy import misc
-from packages import facenet, detect_face
+from packages import net, detect_face
 
 app = Flask(__name__)
 app.secret_key = 'my screcret key'
@@ -125,7 +125,7 @@ def recognize(filename="img.png"):
             HumanNames.sort()
 
             print('Loading feature extraction model')
-            facenet.load_model(MODEL_DIR)
+            net.load_model(MODEL_DIR)
 
             images_placeholder = tf.get_default_graph().get_tensor_by_name("input:0")
             embeddings = tf.get_default_graph().get_tensor_by_name("embeddings:0")
@@ -148,7 +148,7 @@ def recognize(filename="img.png"):
             if (c % timeF == 0):
 
                 if frame.ndim == 2:
-                    frame = facenet.to_rgb(frame)
+                    frame = net.to_rgb(frame)
                 frame = frame[:, :, 0:3]
                 bounding_boxes, _ = detect_face.detect_face(frame, minsize, pnet, rnet, onet, threshold, factor)
                 nrof_faces = bounding_boxes.shape[0]
@@ -176,11 +176,11 @@ def recognize(filename="img.png"):
                             continue
 
                         cropped.append(frame[bb[i][1]:bb[i][3], bb[i][0]:bb[i][2], :])
-                        cropped[i] = facenet.flip(cropped[i], False)
+                        cropped[i] = net.flip(cropped[i], False)
                         scaled.append(misc.imresize(cropped[i], (image_size, image_size), interp='bilinear'))
                         scaled[i] = cv2.resize(scaled[i], (input_image_size, input_image_size),
                                                interpolation=cv2.INTER_CUBIC)
-                        scaled[i] = facenet.prewhiten(scaled[i])
+                        scaled[i] = net.prewhiten(scaled[i])
                         scaled_reshape.append(scaled[i].reshape(-1, input_image_size, input_image_size, 3))
                         feed_dict = {images_placeholder: scaled_reshape[i], phase_train_placeholder: False}
                         emb_array[0, :] = sess.run(embeddings, feed_dict=feed_dict)
@@ -191,7 +191,7 @@ def recognize(filename="img.png"):
                         best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
                         print("Best Predictions ", best_class_probabilities)
 
-                        if best_class_probabilities[0] > 0.6:
+                        if best_class_probabilities[0] > 0.3:
                             print('Result Indices: ', best_class_indices[0])
                             print(HumanNames)
                             for H_i in HumanNames:
